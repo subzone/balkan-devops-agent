@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.3] - 2026-04-26
+
+### Changed
+- Povećana rezolucija ikone ekstenzije na 1024x1024px za bolji prikaz na marketplace-u
+- Ažuriran SVG fajl ikone za veću rezoluciju
+
+### Added
+- Favicon za GitHub Pages (PNG i SVG)
+- Automatsko prikazivanje najnovije verzije sa GitHub API-ja
+- Changelog sekcija na GitHub Pages sajtu
+
 ## [0.0.2] - 2026-04-26
 
 ### Added

@@ -2,7 +2,7 @@
   "name": "balkan-devops-agents",
   "displayName": "Balkan DevOps Agents",
   "description": "10 GitHub Copilot chat agenata sa Balkanskim karakterima za DevOps, FinOps, Security i Cloud Engineering",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT",
   "engines": {
     "vscode": "^1.116.0"

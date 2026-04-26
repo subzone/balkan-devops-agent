@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="10 GitHub Copilot chat agenata sa autentičnim balkanskim karakterima za svaku DevOps disciplinu">
     <title>Balkan DevOps Agents - VS Code Ekstenzija</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <style>
         * {
             margin: 0;
@@ -188,6 +190,34 @@
             display: inline-block;
             margin: 5px;
         }
+        
+        .version-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            display: inline-block;
+            margin-top: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .changelog {
+            background: #f7fafc;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .changelog h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .changelog ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
     </style>
 </head>
 <body>
@@ -195,6 +225,8 @@
         <div class="container">
             <h1>🇷🇸 Balkan DevOps Agents</h1>
             <p>10 GitHub Copilot chat agenata sa autentičnim balkanskim karakterima za svaku DevOps disciplinu</p>
+            <div class="version-badge" id="version-info">📦 Verzija: v0.0.3</div>
+            <br><br>
             <a href="https://marketplace.visualstudio.com/items?itemName=subzone.balkan-devops-agents" class="install-btn">Instaliraj sa Marketplace-a</a>
             <br><br>
             <a href="https://github.com/subzone/balkan-devops-agent" class="install-btn" style="background: #2d3748; color: white;">Pogledaj na GitHub-u</a>
@@ -210,6 +242,38 @@
                     sa svojim jedinstvenim karakterom, stilom komunikacije i oblašću ekspertize. Od garbage collection-a do cloud cost optimizacije, 
                     od security audita do architecture review-a—ovi agenti pričaju srpski i obavljaju posao!
                 </p>
+            </section>
+            
+            <section id="latest-updates">
+                <h2>Poslednje Izmene</h2>
+                <div class="changelog">
+                    <h4>📦 v0.0.3 - 26. april 2026.</h4>
+                    <ul>
+                        <li>Povećana rezolucija ikone ekstenzije na 1024x1024px za bolji prikaz na marketplace-u</li>
+                        <li>Ažuriran SVG fajl ikone za veću rezoluciju</li>
+                        <li>Dodati favicon-i za GitHub Pages (PNG i SVG)</li>
+                        <li>Automatsko prikazivanje najnovije verzije sa GitHub API-ja</li>
+                        <li>Changelog sekcija na GitHub Pages sajtu</li>
+                    </ul>
+                </div>
+                <div class="changelog">
+                    <h4>📦 v0.0.2 - 26. april 2026.</h4>
+                    <ul>
+                        <li>Dodata ikonica ekstenzije (assets/icon.png)</li>
+                        <li>Dodat SVG fajl ikone (assets/icon.svg)</li>
+                    </ul>
+                </div>
+                <div class="changelog">
+                    <h4>📦 v0.0.1 - 26. april 2026.</h4>
+                    <ul>
+                        <li>Početno pre-release izdanje Balkan DevOps Agents</li>
+                        <li>10 specijalizovanih DevOps agenata sa jedinstvenim ličnostima</li>
+                        <li>Prilagođene SVG ikone za svakog agenta</li>
+                        <li>Podrška za srpski jezik u komunikaciji agenata</li>
+                        <li>GitHub Copilot Chat integracija</li>
+                        <li>Kompletna dokumentacija i GitHub Pages sajt</li>
+                    </ul>
+                </div>
             </section>
 
             <section id="features">
@@ -390,5 +454,19 @@
             </p>
         </div>
     </footer>
+    
+    <script>
+        // Fetch latest release version from GitHub
+        fetch('https://api.github.com/repos/subzone/balkan-devops-agent/releases/latest')
+            .then(response => response.json())
+            .then(data => {
+                if (data.tag_name) {
+                    document.getElementById('version-info').textContent = `📦 Najnovija verzija: ${data.tag_name}`;
+                }
+            })
+            .catch(error => {
+                console.log('Could not fetch latest version:', error);
+            });
+    </script>
 </body>
 </html>
