@@ -85,8 +85,50 @@ async function createAgentHandler(agent: AgentDefinition) {
   };
 }
 
+async function checkForUpdates(context: vscode.ExtensionContext) {
+  const extension = vscode.extensions.getExtension('subzone.balkan-devops-agents');
+  if (!extension) return;
+
+  const currentVersion = extension.packageJSON.version;
+  const lastVersion = context.globalState.get<string>('lastVersion');
+
+  // First time install or update detected
+  if (!lastVersion) {
+    // First install
+    await context.globalState.update('lastVersion', currentVersion);
+    vscode.window.showInformationMessage(
+      `🇷🇸 Dobrodošao u Balkan DevOps Agents v${currentVersion}! Pokreni agenta sa @steva, @sima, @zika...`,
+      'Prikaži agente',
+      'Dokumentacija'
+    ).then(selection => {
+      if (selection === 'Prikaži agente') {
+        vscode.commands.executeCommand('balkan-devops.listAgents');
+      } else if (selection === 'Dokumentacija') {
+        vscode.env.openExternal(vscode.Uri.parse('https://subzone.github.io/balkan-devops-agent/'));
+      }
+    });
+  } else if (lastVersion !== currentVersion) {
+    // Update detected
+    await context.globalState.update('lastVersion', currentVersion);
+    vscode.window.showInformationMessage(
+      `🎉 Balkan DevOps Agents ažurirano na v${currentVersion}!`,
+      'Šta je novo?',
+      'Dokumentacija'
+    ).then(selection => {
+      if (selection === 'Šta je novo?') {
+        vscode.env.openExternal(vscode.Uri.parse('https://github.com/subzone/balkan-devops-agent/blob/main/CHANGELOG.md'));
+      } else if (selection === 'Dokumentacija') {
+        vscode.env.openExternal(vscode.Uri.parse('https://subzone.github.io/balkan-devops-agent/'));
+      }
+    });
+  }
+}
+
 export async function activate(context: vscode.ExtensionContext) {
   console.log("Balkan DevOps Agents aktivirani!");
+
+  // Check for updates and show welcome message
+  await checkForUpdates(context);
 
   for (const agent of AGENTS) {
     const handler = await createAgentHandler(agent);

@@ -25,6 +25,15 @@
     "type": "git",
     "url": "https://github.com/subzone/balkan-devops-agents"
   },
+  "bugs": {
+    "url": "https://github.com/subzone/balkan-devops-agent/issues"
+  },
+  "homepage": "https://subzone.github.io/balkan-devops-agent/",
+  "qna": "https://github.com/subzone/balkan-devops-agent/discussions",
+  "galleryBanner": {
+    "color": "#667eea",
+    "theme": "dark"
+  },
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {

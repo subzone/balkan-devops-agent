@@ -77,7 +77,25 @@ ext install subzone.balkan-devops-agents
 
 ---
 
-## 🛠️ Razvoj
+## � Ažuriranja
+
+Ekstenzija se **automatski ažurira** preko VS Code Marketplace-a:
+
+- ✅ VS Code proverava nove verzije u pozadini
+- ✅ Ažuriranja se automatski preuzimaju i instaliraju
+- ✅ Dobijaš notifikaciju sa "Šta je novo?" linkom
+- ✅ Sve promene su dokumentovane u [CHANGELOG.md](CHANGELOG.md)
+
+**Ručna provera:**
+- Otvori Extensions panel (Cmd+Shift+X)
+- Potraži "Balkan DevOps Agents"
+- Klikni **Update** ako je dostupno
+
+Detaljne informacije: [docs/UPDATES.md](docs/UPDATES.md)
+
+---
+
+## �🛠️ Razvoj
 
 ### Struktura projekta
 
