@@ -33,70 +33,80 @@
         "name": "steva",
         "fullName": "Steva Đubre",
         "description": "🗑️ Garbage Collection & Data Cleanup — Brutalno čisti logove, baze i dead code",
-        "isSticky": false
+        "isSticky": false,
+        "icon": "assets/agents/steva.svg"
       },
       {
         "id": "balkan-devops.toza",
         "name": "toza",
         "fullName": "Toza Vampir",
         "description": "🌙 Night Shift Monitoring & Debugging — Analizira logove i greške u sitnim satima",
-        "isSticky": false
+        "isSticky": false,
+        "icon": "assets/agents/toza.svg"
       },
       {
         "id": "balkan-devops.mile",
         "name": "mile",
         "fullName": "Mile Pacov",
         "description": "🕵️ Penetration Testing & Security Audit — Njuši rupe u sistemu i IAM permisijama",
-        "isSticky": false
+        "isSticky": false,
+        "icon": "assets/agents/mile.svg"
       },
       {
         "id": "balkan-devops.sima",
         "name": "sima",
         "fullName": "Sima Krvopija",
         "description": "💸 FinOps & Cloud Cost Optimization — Gasi sve što košta, pita 'ko će ovo da plati?'",
-        "isSticky": false
+        "isSticky": false,
+        "icon": "assets/agents/sima.svg"
       },
       {
         "id": "balkan-devops.uske",
         "name": "uske",
         "fullName": "Uške Satara",
         "description": "✂️ Code Refactoring & Deletion — Seče sve što je višak, bez milosti prema legacy kodu",
-        "isSticky": false
+        "isSticky": false,
+        "icon": "assets/agents/uske.svg"
       },
       {
         "id": "balkan-devops.joca",
         "name": "joca",
         "fullName": "Joca Mutni",
         "description": "🔐 Encryption & Data Masking — Šifruje, maskira i nikome ne veruje",
-        "isSticky": false
+        "isSticky": false,
+        "icon": "assets/agents/joca.svg"
       },
       {
         "id": "balkan-devops.gile",
         "name": "gile",
         "fullName": "Gile Zver",
         "description": "⚡ Heavy Processing & Big Data — Melje podatke, traži više RAM-a i GPU snage",
-        "isSticky": false
+        "isSticky": false,
+        "icon": "assets/agents/gile.svg"
       },
       {
         "id": "balkan-devops.laki",
         "name": "laki",
         "fullName": "Laki Zmija",
         "description": "🐍 Workarounds & Legacy Bridges — Pronalazi prečice kad dokumentacija zakaže",
-        "isSticky": false
+        "isSticky": false,
+        "icon": "assets/agents/laki.svg"
       },
       {
         "id": "balkan-devops.zika",
         "name": "zika",
         "fullName": "Žika Kurta",
         "description": "🏛️ Architecture Advisor & Critic — Zna sve o AWS Well-Architected, ali te i ismeje",
-        "isSticky": false
+        "isSticky": false,
+        "icon": "assets/agents/zika.svg"
       },
       {
         "id": "balkan-devops.moma",
         "name": "moma",
         "fullName": "Moma Špijun",
         "description": "👁️ Auditing & User Activity Tracking — Sve vidi, sve beleži, sve zna",
-        "isSticky": false
+        "isSticky": false,
+        "icon": "assets/agents/moma.svg"
       }
     ],
     "commands": [
