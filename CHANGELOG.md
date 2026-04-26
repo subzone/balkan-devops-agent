@@ -7,10 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.0] - 2026-04-26
+## [0.0.1] - 2026-04-26
 
 ### Added
-- Initial release of Balkan DevOps Agents
+- Initial pre-release of Balkan DevOps Agents
 - 10 specialized DevOps agents with unique personalities:
   - 🗑️ Steva Đubre - Garbage Collection & Data Cleanup
   - 🌙 Toza Vampir - Night Shift Monitoring & Debugging
@@ -46,5 +46,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History
 
-[Unreleased]: https://github.com/subzone/balkan-devops-agent/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/subzone/balkan-devops-agent/releases/tag/v1.0.0
+[Unreleased]: https://github.com/subzone/balkan-devops-agent/compare/v0.0.1...HEAD
+[0.0.1]: https://github.com/subzone/balkan-devops-agent/releases/tag/v0.0.1
