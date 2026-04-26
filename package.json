@@ -1,0 +1,128 @@
+{
+  "name": "balkan-devops-agents",
+  "displayName": "Balkan DevOps Agents",
+  "description": "10 GitHub Copilot chat agenata sa Balkanskim karakterima za DevOps, FinOps, Security i Cloud Engineering",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.116.0"
+  },
+  "publisher": "subzone",
+  "categories": [
+    "AI",
+    "Chat"
+  ],
+  "keywords": [
+    "copilot",
+    "devops",
+    "cloud",
+    "finops",
+    "security",
+    "aws",
+    "agents"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/subzone/balkan-devops-agents"
+  },
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "chatParticipants": [
+      {
+        "id": "balkan-devops.steva",
+        "name": "steva",
+        "fullName": "Steva Đubre",
+        "description": "🗑️ Garbage Collection & Data Cleanup — Brutalno čisti logove, baze i dead code",
+        "isSticky": false
+      },
+      {
+        "id": "balkan-devops.toza",
+        "name": "toza",
+        "fullName": "Toza Vampir",
+        "description": "🌙 Night Shift Monitoring & Debugging — Analizira logove i greške u sitnim satima",
+        "isSticky": false
+      },
+      {
+        "id": "balkan-devops.mile",
+        "name": "mile",
+        "fullName": "Mile Pacov",
+        "description": "🕵️ Penetration Testing & Security Audit — Njuši rupe u sistemu i IAM permisijama",
+        "isSticky": false
+      },
+      {
+        "id": "balkan-devops.sima",
+        "name": "sima",
+        "fullName": "Sima Krvopija",
+        "description": "💸 FinOps & Cloud Cost Optimization — Gasi sve što košta, pita 'ko će ovo da plati?'",
+        "isSticky": false
+      },
+      {
+        "id": "balkan-devops.uske",
+        "name": "uske",
+        "fullName": "Uške Satara",
+        "description": "✂️ Code Refactoring & Deletion — Seče sve što je višak, bez milosti prema legacy kodu",
+        "isSticky": false
+      },
+      {
+        "id": "balkan-devops.joca",
+        "name": "joca",
+        "fullName": "Joca Mutni",
+        "description": "🔐 Encryption & Data Masking — Šifruje, maskira i nikome ne veruje",
+        "isSticky": false
+      },
+      {
+        "id": "balkan-devops.gile",
+        "name": "gile",
+        "fullName": "Gile Zver",
+        "description": "⚡ Heavy Processing & Big Data — Melje podatke, traži više RAM-a i GPU snage",
+        "isSticky": false
+      },
+      {
+        "id": "balkan-devops.laki",
+        "name": "laki",
+        "fullName": "Laki Zmija",
+        "description": "🐍 Workarounds & Legacy Bridges — Pronalazi prečice kad dokumentacija zakaže",
+        "isSticky": false
+      },
+      {
+        "id": "balkan-devops.zika",
+        "name": "zika",
+        "fullName": "Žika Kurta",
+        "description": "🏛️ Architecture Advisor & Critic — Zna sve o AWS Well-Architected, ali te i ismeje",
+        "isSticky": false
+      },
+      {
+        "id": "balkan-devops.moma",
+        "name": "moma",
+        "fullName": "Moma Špijun",
+        "description": "👁️ Auditing & User Activity Tracking — Sve vidi, sve beleži, sve zna",
+        "isSticky": false
+      }
+    ],
+    "commands": [
+      {
+        "command": "balkan-devops.listAgents",
+        "title": "Balkan DevOps: Prikaži sve agente",
+        "category": "Balkan DevOps"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "lint": "eslint src --ext ts",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.39",
+    "@types/vscode": "^1.116.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@vscode/vsce": "^2.26.0",
+    "eslint": "^8.57.0",
+    "typescript": "^5.9.3"
+  }
+}
