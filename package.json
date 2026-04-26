@@ -215,6 +215,11 @@
         "command": "balkan-devops.installClaudeCodeProjectAgents",
         "title": "Balkan DevOps: Generiši Claude Code Subagents (Project Level)",
         "category": "Balkan DevOps"
+      },
+      {
+        "command": "balkan-devops.installAntigravity",
+        "title": "Balkan DevOps: Instaliraj agente za Antigravity (Gemini)",
+        "category": "Balkan DevOps"
       }
     ]
   },

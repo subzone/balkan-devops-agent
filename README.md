@@ -162,6 +162,22 @@ Kucaš `@balkan-sima`, `@balkan-mile`, `@balkan-steva`... ILI samo opišeš prob
 
 ---
 
+## 🚀 Antigravity (Gemini Code Assist) Podrška
+
+Pored svih prethodnih, podržavamo i **Antigravity**!
+Kroz *Knowledge Items* (KIs), Antigravity dobija moć da preuzme identitet Balkan DevOps agenata.
+
+Otvori Command Palette (`Cmd+Shift+P`) i kucaj:
+
+```
+Balkan DevOps: Instaliraj agente za Antigravity (Gemini)
+```
+
+Generiše se `metadata.json` i `artifacts/agent.md` za svakog agenta u `~/.gemini/antigravity/knowledge/`.
+Antigravity ih automatski detektuje i usvaja - pa možeš da kažeš `Oživi Tozu Vampira i debuguj ovo`!
+
+---
+
 ## ⏫ Ažuriranja
 
 **Automatski se ažurira.** VS Code se brine o tome.
@@ -199,7 +215,8 @@ src/
   ├── extension.ts             # Entry point
   ├── agents.ts                # 10 agenata ovde
   ├── amazonq-generator.ts     # Amazon Q / Kiro generator
-  └── claudecode-generator.ts  # Claude Code generator
+  ├── claudecode-generator.ts  # Claude Code generator
+  └── antigravity-generator.ts # Antigravity (Gemini) generator
 package.json                   # Manifest
 ```
 
@@ -217,7 +234,7 @@ Znaš već.
 ## 📋 Šta ti treba
 
 - VS Code (noviji od 1.90)
-- GitHub Copilot (MORA biti aktivna pretplata) **ILI** Amazon Q Developer **ILI** Claude Code
+- GitHub Copilot **ILI** Amazon Q Developer **ILI** Claude Code **ILI** Antigravity (Gemini Code Assist)
 - Node.js 20+ (za dev)
 
 Nemaš nijedan? Onda ovo ne radi. Jednostavno.

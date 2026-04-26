@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.8] - 2026-04-26
 
 ### Added
+- **Antigravity (Gemini Code Assist) podrška** — Export Balkan DevOps agenata u Antigravity Knowledge Items (KIs).
+  - Nova komanda: `Balkan DevOps: Instaliraj agente za Antigravity (Gemini)`
+  - Generiše `metadata.json` i `artifacts/agent.md` u `~/.gemini/antigravity/knowledge/balkan-{ime}/`
+  - Antigravity automatski usvaja "personu" i bazu znanja agenta.
 - **Claude Code podrška** — I CLAUDE CODE radi! Anthropic-ovi subagents.
   - Nova komanda: `Balkan DevOps: Instaliraj agente za Claude Code` — multi-AI platforme u istoj ekstenziji!
   - **User Level** (`~/.claude/agents/`) — generiše subagents, pozivaj sa `@balkan-sima` u Claude Code
@@ -18,7 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Automatski routing na osnovu description polja — opiši problem, Claude rutira na pravog agenta
   - Nema dependency-ja, čist markdown — tools nasleđuju iz parent sesije
 - Novi fajl: `src/claudecode-generator.ts` — kompletna logika za Claude Code generisanje
-- 3 nove komande u Command Palette:
+- Novi fajl: `src/antigravity-generator.ts` — logika za Antigravity (Gemini)
+- 4 nove komande u Command Palette:
+  - `Balkan DevOps: Instaliraj agente za Antigravity (Gemini)`
   - `Balkan DevOps: Instaliraj agente za Claude Code` (glavni entry point)
   - `Balkan DevOps: Generiši Claude Code Subagents (User Level)`
   - `Balkan DevOps: Generiši Claude Code Subagents (Project Level)`

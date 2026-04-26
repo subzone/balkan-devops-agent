@@ -6,6 +6,7 @@ import {
   installClaudeCodeUserAgents,
   installClaudeCodeProjectAgents,
 } from "./claudecode-generator";
+import { installAntigravityAgents } from "./antigravity-generator";
 
 const BASE_SYSTEM_SUFFIX = `
 Odgovaraš na srpskom jeziku. Daješ tehnički precizne odgovore u svom karakteru.
@@ -384,6 +385,14 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       "balkan-devops.installClaudeCodeProjectAgents",
       installClaudeCodeProjectAgents
+    )
+  );
+
+  // Antigravity (Gemini Code Assist) integration commands
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "balkan-devops.installAntigravity",
+      installAntigravityAgents
     )
   );
 }
