@@ -7,13 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.0.8] - 2026-04-26
+## [0.0.9] - 2026-04-26
 
 ### Added
 - **Antigravity (Gemini Code Assist) podrška** — Export Balkan DevOps agenata u Antigravity Knowledge Items (KIs).
   - Nova komanda: `Balkan DevOps: Instaliraj agente za Antigravity (Gemini)`
   - Generiše `metadata.json` i `artifacts/agent.md` u `~/.gemini/antigravity/knowledge/balkan-{ime}/`
   - Antigravity automatski usvaja "personu" i bazu znanja agenta.
+- Novi fajl: `src/antigravity-generator.ts` — logika za Antigravity (Gemini)
+
+## [0.0.8] - 2026-04-26
+
+### Added
 - **Claude Code podrška** — I CLAUDE CODE radi! Anthropic-ovi subagents.
   - Nova komanda: `Balkan DevOps: Instaliraj agente za Claude Code` — multi-AI platforme u istoj ekstenziji!
   - **User Level** (`~/.claude/agents/`) — generiše subagents, pozivaj sa `@balkan-sima` u Claude Code
@@ -21,10 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Markdown fajlovi sa YAML frontmatter (`name`, `description`) + system prompt + knowledge base
   - Automatski routing na osnovu description polja — opiši problem, Claude rutira na pravog agenta
   - Nema dependency-ja, čist markdown — tools nasleđuju iz parent sesije
-- Novi fajl: `src/claudecode-generator.ts` — kompletna logika za Claude Code generisanje
-- Novi fajl: `src/antigravity-generator.ts` — logika za Antigravity (Gemini)
-- 4 nove komande u Command Palette:
-  - `Balkan DevOps: Instaliraj agente za Antigravity (Gemini)`
+- 3 nove komande u Command Palette:
   - `Balkan DevOps: Instaliraj agente za Claude Code` (glavni entry point)
   - `Balkan DevOps: Generiši Claude Code Subagents (User Level)`
   - `Balkan DevOps: Generiši Claude Code Subagents (Project Level)`
@@ -192,7 +194,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History
 
-[Unreleased]: https://github.com/subzone/balkan-devops-agent/compare/v0.0.7...HEAD
+[Unreleased]: https://github.com/subzone/balkan-devops-agent/compare/v0.0.9...HEAD
+[0.0.9]: https://github.com/subzone/balkan-devops-agent/compare/v0.0.8...v0.0.9
+[0.0.8]: https://github.com/subzone/balkan-devops-agent/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/subzone/balkan-devops-agent/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/subzone/balkan-devops-agent/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/subzone/balkan-devops-agent/compare/v0.0.4...v0.0.5
