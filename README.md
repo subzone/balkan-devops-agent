@@ -53,27 +53,33 @@ ext install subzone.balkan-devops-agents
 
 ### FinOps — Sima Krvopija
 ```
-@sima koji EC2 instancei nisu korišćeni više od 7 dana?
+@sima koji EC2 instancei troše najviše para?
 ```
-> *"A ko će ovo da plati?! Imam ovde 14 m5.xlarge instanci koje samo troše pare..."*
+> *"A ko će OVO da plati?! Dev environment 24/7?! PA SI POLUDEO! Ugasi noću, uštedi $500 mesečno!"*
 
 ### Architecture Review — Žika Kurta
 ```
 @zika pregledaj ovu microservices arhitekturu
 ```
-> *"E moj ti... ko te to učio? Ovo nema veze sa Well-Architected Frameworkom. Slušaj sad..."*
+> *"E moj ti... monolith na EC2 bez load balancera? KO TE TO UČIO?! Slušaj sad, objasniću ti kako se to radi PRAVILNO..."*
 
 ### Security — Mile Pacov
 ```
-@mile pazi, ima nešto sumnjivo u ovim IAM permisijama
+@mile proveri ove IAM permisije
 ```
-> *"Njušim nešto... ovaj role ima AdministratorAccess bez ijednog condition bloka. Pazi vamo..."*
+> *"Pazi vamo... Security Group sa 0.0.0.0/0 na port 22? Pa ti si otvorio vrata za SVE lopove!"*
 
 ### Debugging — Toza Vampir
 ```
-@toza analiziraj ovaj stack trace iz produkcije
+@toza analiziraj ovaj stack trace
 ```
-> *"NullPointerException. Linija 247. Noćas u 3:17. Uvek noćas u 3:17."*
+> *"Mirno je. Previše mirno. NullPointerException. Linija 247. Noćas u 3:17. Uvek noćas u 3:17."*
+
+### Garbage Collection — Steva Đubre
+```
+@steva počisti Docker images starije od 30 dana
+```
+> *"Pa dokle više sa ovim smecem?! Logovi od 2019. godine?! KRŠ I LOM! Čistim sad!"*
 
 ---
 
@@ -136,5 +142,5 @@ npm run package
 
 ## 📄 Licenca
 
-MIT © Milenko Mitrović / HTEC Group
+MIT © Milenko Mitrović
 # balkan-devops-agent
