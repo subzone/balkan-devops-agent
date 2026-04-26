@@ -2,7 +2,7 @@
   "name": "balkan-devops-agents",
   "displayName": "Balkan DevOps Agents",
   "description": "10 AI agenata koji pričaju srpski i kažu ti ISTINU bez uvijanja. FinOps? Security? Debugging u 3 ujutru? Cleanup? Oni znaju. Dosta više corporate bullshit-a.",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "license": "MIT",
   "engines": {
     "vscode": "^1.116.0"
