@@ -101,7 +101,23 @@ Detaljne informacije: [docs/UPDATES.md](docs/UPDATES.md)
 
 ---
 
-## �🛠️ Razvoj
+## ⚠️ Disclaimer
+
+**Koristi na sopstvenu odgovornost.**
+
+Ova ekstenzija je eksperimentalna i ne garantuje tačnost predloga. Agenti su AI asistenata koji mogu grešiti.
+
+- ❌ Ne koristite za kritične production sisteme bez pregleda
+- ❌ Ne primenjujte sugestije agenata bez validacije
+- ❌ Ne šaljite osetljive podatke u chat
+- ✅ Uvek pregledajte kod/infrastrukturu pre izvršavanja
+- ✅ Tretirajte odgovore kao **savete**, ne garantovane rešenja
+
+**Autor ne snosi odgovornost za** štetu, data loss, troškove ili incident koji nastanu upotrebom ovog softvera. MIT licenca eksplicitno naznačava: **NO WARRANTY**.
+
+---
+
+## 🛠️ Razvoj
 
 ### Struktura projekta
 
