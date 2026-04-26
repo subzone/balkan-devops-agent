@@ -80,12 +80,15 @@ Imaš ideju? Super! Otvori Issue sa:
 #### Struktura projekta
 ```
 src/
-├── agents.ts       # Definicije svih agenata
-├── extension.ts    # Entry point, registracija
+├── agents.ts              # Definicije svih agenata
+├── extension.ts           # Entry point, registracija
+└── amazonq-generator.ts   # Amazon Q / Kiro generator
 assets/
-├── agents/         # Ikone za agente
+├── agents/                # Ikone za agente
+knowledge/
+├── {agent}/               # Knowledge base po agentu
 docs/
-├── index.html      # GitHub Pages dokumentacija
+├── index.html             # GitHub Pages dokumentacija
 ```
 
 #### Pokretanje u development modu
@@ -133,6 +136,10 @@ npm test           # Kada dodamo testove
 2. CI/CD mora biti zeleno
 3. Dokumentacija mora biti ažurirana
 4. Ikone moraju biti dodane za nove agente
+
+### Amazon Q Generator
+
+Ako menjaš agente u `src/agents.ts`, Amazon Q generator automatski pokuplja promene — ne treba ništa dodatno. Generator čita `AGENTS` niz i knowledge base fajlove iz `knowledge/{agent}/`.
 
 ### Pitanja?
 

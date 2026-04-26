@@ -252,8 +252,49 @@
                 </p>
             </section>
             
+            <section id="amazonq">
+                <h2>🔄 Amazon Q / Kiro Podrška</h2>
+                <p style="font-size: 1.3em; line-height: 1.8; font-weight: 500;">
+                    <strong>E SAD SLUŠAJ!</strong> Nisi vezan za Copilot — agenti rade i sa Amazon Q Developer i Kiro!
+                </p>
+                <p style="font-size: 1.1em; line-height: 1.8; margin-top: 15px;">
+                    Jedan klik i Steva, Sima, Mile i ekipa se usele u Amazon Q. BEZ KODIRANJA. Samo markdown i gotova priča.
+                </p>
+                <h3 style="margin-top: 25px;">Kako?</h3>
+                <pre><code>Cmd+Shift+P → Balkan DevOps: Instaliraj agente za Amazon Q / Kiro</code></pre>
+                <div class="features" style="margin-top: 20px;">
+                    <div class="feature">
+                        <div class="feature-icon">👤</div>
+                        <h3>User Level</h3>
+                        <p><code>~/.aws/amazonq/prompts/</code></p>
+                        <p>Pozivaj sa <code>@prompt sima</code> u Q chatu. Radi u svim projektima.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">📁</div>
+                        <h3>Repo Level</h3>
+                        <p><code>.amazonq/rules/</code></p>
+                        <p>Automatski kontekst u svakom Q requestu. Deli se sa timom preko git-a.</p>
+                    </div>
+                </div>
+                <div class="example-section" style="margin-top: 25px;">
+                    <h4>Šta se generiše?</h4>
+                    <p>System prompt + ličnost + ekspertiza + knowledge base + cross-agent preporuke. Nema koda. Nema dependency-ja. ČIST MARKDOWN. KRŠ I LOM!</p>
+                </div>
+            </section>
+
             <section id="latest-updates">
                 <h2>Poslednje Izmene</h2>
+                <div class="changelog">
+                    <h4>📦 v0.0.7 - 27. april 2026.</h4>
+                    <ul>
+                        <li><strong>Amazon Q / Kiro podrška!</strong> Jedan klik — agenti se generišu kao saved prompts ili workspace rules</li>
+                        <li>User Level: <code>~/.aws/amazonq/prompts/</code> — pozivaj sa <code>@prompt sima</code></li>
+                        <li>Repo Level: <code>.amazonq/rules/</code> — automatski kontekst, deli se sa timom</li>
+                        <li>Multi-select agent picker sa modal confirmation</li>
+                        <li>Knowledge base automatski uključen u generisane fajlove</li>
+                        <li>3 nove komande u Command Palette</li>
+                    </ul>
+                </div>
                 <div class="changelog">
                     <h4>📦 v0.0.3 - 26. april 2026.</h4>
                     <ul>
@@ -299,8 +340,8 @@
                     </div>
                     <div class="feature">
                         <div class="feature-icon">💬</div>
-                        <h3>Copilot Chat</h3>
-                        <p>Direktno u VS Code, direktno u stvar</p>
+                        <h3>Copilot + Amazon Q</h3>
+                        <p>Radi sa oba — biraš šta ti odgovara</p>
                     </div>
                     <div class="feature">
                         <div class="feature-icon">🇷🇸</div>
@@ -413,10 +454,10 @@
                 <h2>Šta ti treba</h2>
                 <ul style="font-size: 1.1em; line-height: 2;">
                     <li><strong>VS Code 1.116+</strong></li>
-                    <li><strong>GitHub Copilot pretplata</strong> (MORA biti aktivna)</li>
+                    <li><strong>GitHub Copilot</strong> (za @agent pozive) <strong>ILI Amazon Q Developer</strong> (za saved prompts / rules)</li>
                 </ul>
                 <p style="font-size: 1em; margin-top: 10px; color: #666;">
-                    Nemaš Copilot? Onda ovo ne radi. Jednostavno.
+                    Nemaš ni Copilot ni Amazon Q? Onda ovo ne radi. Jednostavno.
                 </p>
             </section>
 

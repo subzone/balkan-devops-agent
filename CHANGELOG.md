@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.7] - 2026-04-27
+
+### Added
+- **Amazon Q / Kiro podrška** — KRŠ I LOM, nisi više vezan za Copilot!
+  - Nova komanda: `Balkan DevOps: Instaliraj agente za Amazon Q / Kiro` — jedan klik, biraš gde
+  - **User Level** (`~/.aws/amazonq/prompts/`) — generiše saved prompts, pozivaj sa `@prompt sima` u Q chatu
+  - **Repo Level** (`.amazonq/rules/`) — generiše workspace rules, automatski kontekst u svakom Q requestu
+  - Multi-select agent picker — biraš koje agente hoćeš, svi selektovani po defaultu
+  - Modal confirmation pre pisanja — pita te pre nego što prepiše fajlove, nismo divljaci
+  - Knowledge base sadržaj se automatski uključuje u generisane fajlove
+  - Cross-agent preporuke u svakom generisanom promptu
+- Novi fajl: `src/amazonq-generator.ts` — kompletna logika za generisanje
+- 3 nove komande u Command Palette:
+  - `Balkan DevOps: Instaliraj agente za Amazon Q / Kiro` (glavni entry point)
+  - `Balkan DevOps: Generiši Amazon Q Saved Prompts (User Level)`
+  - `Balkan DevOps: Generiši Amazon Q Workspace Rules (Repo Level)`
+
+### Changed
+- Ažurirana dokumentacija sa Amazon Q / Kiro sekcijama — README, GitHub Pages, agent docs
+- Struktura projekta proširena sa `amazonq-generator.ts`
+- Requirements sekcija: sada navodi i Amazon Q kao alternativu Copilot-u
+
 ## [0.0.6] - 2026-04-26
 
 ### Added
@@ -138,5 +160,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History
 
-[Unreleased]: https://github.com/subzone/balkan-devops-agent/compare/v0.0.1...HEAD
+[Unreleased]: https://github.com/subzone/balkan-devops-agent/compare/v0.0.7...HEAD
+[0.0.7]: https://github.com/subzone/balkan-devops-agent/compare/v0.0.6...v0.0.7
+[0.0.6]: https://github.com/subzone/balkan-devops-agent/compare/v0.0.5...v0.0.6
+[0.0.5]: https://github.com/subzone/balkan-devops-agent/compare/v0.0.4...v0.0.5
+[0.0.4]: https://github.com/subzone/balkan-devops-agent/compare/v0.0.3...v0.0.4
+[0.0.3]: https://github.com/subzone/balkan-devops-agent/compare/v0.0.2...v0.0.3
+[0.0.2]: https://github.com/subzone/balkan-devops-agent/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/subzone/balkan-devops-agent/releases/tag/v0.0.1

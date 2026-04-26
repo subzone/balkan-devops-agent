@@ -263,8 +263,27 @@ Agenti se međusobno preporučuju:
 
 ---
 
+## 🔄 Amazon Q / Kiro Korišćenje
+
+Ne moraš da koristiš Copilot! Agenti rade i sa **Amazon Q Developer** i **Kiro**.
+
+Otvori Command Palette (`Cmd+Shift+P`) → `Balkan DevOps: Instaliraj agente za Amazon Q / Kiro`
+
+```
+# User Level — saved prompts, radi u svim projektima:
+@prompt sima koji EC2 instancei troše najviše para?
+@prompt mile proveri IAM permisije
+@prompt zika pregledaj arhitekturu
+
+# Repo Level — automatski kontekst u svakom Q requestu
+# Samo commituj .amazonq/rules/ i ceo tim dobija agente!
+```
+
+---
+
 ## 💡 Kako koristiti agente
 
+### Copilot Chat (direktno)
 ```
 # U VS Code Copilot Chat-u:
 

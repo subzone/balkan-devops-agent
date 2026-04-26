@@ -90,7 +90,49 @@ npm run compile
 
 ---
 
-## � Ažuriranja
+## 🔄 Amazon Q / Kiro Podrška
+
+**E SAD SLUŠAJ!** Nisi vezan za Copilot — agenti rade i sa **Amazon Q Developer** i **Kiro**!
+
+Jedan klik i Steva, Sima, Mile i ekipa se usele u Amazon Q. BEZ KODIRANJA. BEZ KOMPAJLIRANJA. Samo markdown fajlovi i gotova priča.
+
+### Kako?
+
+Otvori Command Palette (`Cmd+Shift+P`) i kucaj:
+
+```
+Balkan DevOps: Instaliraj agente za Amazon Q / Kiro
+```
+
+Biraš gde hoćeš da ih staviš:
+
+| Opcija | Gde se instalira | Kako se koristi | Za koga |
+|--------|-----------------|-----------------|---------|
+| **👤 User Level** | `~/.aws/amazonq/prompts/` | `@prompt sima` u Q chatu | Tvoji agenti, svi projekti |
+| **📁 Repo Level** | `.amazonq/rules/` | Automatski u svakom Q chatu | Ceo tim, deli se preko git-a |
+| **🔄 Oba** | I jedno i drugo | Sve od gore | Kad hoćeš SVE |
+
+### User Level — Saved Prompts
+
+Generiše `~/.aws/amazonq/prompts/{agent}.md` za svakog agenta. Pozivaj sa `@prompt sima`, `@prompt mile`, itd. u Amazon Q chatu. Radi GLOBALNO, u svim projektima.
+
+### Repo Level — Workspace Rules
+
+Generiše `.amazonq/rules/balkan-{agent}.md` u workspace-u. Amazon Q AUTOMATSKI učitava ove fajlove kao kontekst u svakom chat requestu. Commituj u git — ceo tim dobija agente. KRŠ I LOM!
+
+### Šta se generiše?
+
+Svaki fajl sadrži:
+- System prompt sa ličnošću agenta
+- Ekspertizu i pravila ponašanja
+- Knowledge base sadržaj (FinOps best practices, security checklisti, debugging guide-ovi...)
+- Cross-agent preporuke
+
+**Nema koda. Nema dependency-ja. Nema kompajliranja. ČIST MARKDOWN.**
+
+---
+
+## ⏫ Ažuriranja
 
 **Automatski se ažurira.** VS Code se brine o tome.
 
@@ -112,7 +154,7 @@ Ovo su AI agenti, ne bogovi. Mogu da zajebu. TI si odgovoran za svoje sisteme.
 - ✅ Pregledaj kod UVEK pre izvršavanja.
 - ✅ Saveti, ne garancije.
 
-**Pokvaريš nešto? Tvoja briga.** Data loss? Troškovi? Incidenti? **TVOJ PROBLEM.**
+**Pokvariš nešto? Tvoja briga.** Data loss? Troškovi? Incidenti? **TVOJ PROBLEM.**
 
 MIT licenca kaže: **NO WARRANTY**. Razumeš? Dobro.
 
@@ -124,15 +166,18 @@ MIT licenca kaže: **NO WARRANTY**. Razumeš? Dobro.
 
 ```
 src/
-  ├── extension.ts    # Entry point
-  └── agents.ts       # 10 agenata ovde
-package.json          # Manifest
+  ├── extension.ts          # Entry point
+  ├── agents.ts             # 10 agenata ovde
+  └── amazonq-generator.ts  # Amazon Q / Kiro generator
+package.json                # Manifest
 ```
 
 **Dodaj novog agenta:**
 1. `src/agents.ts` → dodaj u `AGENTS` niz
 2. `package.json` → registruj u `contributes.chatParticipants`
 3. Kompajliraj, testuj, gotovo
+
+**Amazon Q generator** automatski pokuplja novog agenta — ne treba ništa dodatno.
 
 Znaš već.
 
@@ -141,14 +186,13 @@ Znaš već.
 ## 📋 Šta ti treba
 
 - VS Code (noviji od 1.90)
-- GitHub Copilot (MORA biti aktivna pretplata)
+- GitHub Copilot (MORA biti aktivna pretplata) **ILI** Amazon Q Developer
 - Node.js 20+ (za dev)
 
-Nemaš Copilot pretplatu? Onda ovo ne radi. Jednostavno.
+Nemaš ni Copilot ni Amazon Q? Onda ovo ne radi. Jednostavno.
 
 ---
 
 ## 📄 Licenca
 
 MIT © Milenko Mitrović / subzone
-# balkan-devops-agent

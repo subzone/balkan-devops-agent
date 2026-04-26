@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { AGENTS, AgentDefinition } from "./agents";
+import { installAmazonQ, installUserPrompts, installRepoRules } from "./amazonq-generator";
 
 const BASE_SYSTEM_SUFFIX = `
 Odgovaraš na srpskom jeziku. Daješ tehnički precizne odgovore u svom karakteru.
@@ -360,6 +361,13 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(listCommand);
+
+  // Amazon Q / Kiro integration commands
+  context.subscriptions.push(
+    vscode.commands.registerCommand("balkan-devops.installAmazonQ", installAmazonQ),
+    vscode.commands.registerCommand("balkan-devops.installUserPrompts", installUserPrompts),
+    vscode.commands.registerCommand("balkan-devops.installRepoRules", installRepoRules)
+  );
 }
 
 function getFollowupsForAgent(agentName: string): vscode.ChatFollowup[] {
