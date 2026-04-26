@@ -2,7 +2,7 @@
   "name": "balkan-devops-agents",
   "displayName": "Balkan DevOps Agents",
   "description": "10 AI agenata koji pričaju srpski i kažu ti ISTINU bez uvijanja. FinOps? Security? Debugging u 3 ujutru? Cleanup? Oni znaju. Dosta više corporate bullshit-a.",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "license": "MIT",
   "engines": {
     "vscode": "^1.116.0"
@@ -219,6 +219,31 @@
       {
         "command": "balkan-devops.installAntigravity",
         "title": "Balkan DevOps: Instaliraj agente za Antigravity (Gemini)",
+        "category": "Balkan DevOps"
+      },
+      {
+        "command": "balkan-devops.installCodex",
+        "title": "Balkan DevOps: Instaliraj agente za Codex",
+        "category": "Balkan DevOps"
+      },
+      {
+        "command": "balkan-devops.installCodexUserAgents",
+        "title": "Balkan DevOps: Generiši Codex Custom Agents (User Level)",
+        "category": "Balkan DevOps"
+      },
+      {
+        "command": "balkan-devops.installCodexUserAgentsMd",
+        "title": "Balkan DevOps: Generiši Codex AGENTS.md (User Level)",
+        "category": "Balkan DevOps"
+      },
+      {
+        "command": "balkan-devops.installCodexProjectAgents",
+        "title": "Balkan DevOps: Generiši Codex Custom Agents (Project Level)",
+        "category": "Balkan DevOps"
+      },
+      {
+        "command": "balkan-devops.installCodexProjectAgentsMd",
+        "title": "Balkan DevOps: Generiši Codex AGENTS.md (Project Level)",
         "category": "Balkan DevOps"
       }
     ]

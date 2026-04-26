@@ -10,11 +10,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.9] - 2026-04-26
 
 ### Added
+- **Codex podrška** — OpenAI Codex custom agents i `AGENTS.md` pravila.
+  - Nova komanda: `Balkan DevOps: Instaliraj agente za Codex`
+  - **User Level custom agents** (`~/.codex/agents/`) — generiše `balkan-{ime}.toml`
+  - **Project Level custom agents** (`.codex/agents/`) — project-specifični agenti za deljenje preko git-a
+  - **User Level AGENTS.md** (`~/.codex/AGENTS.md`) — globalna Codex pravila za sve projekte
+  - **Project Level AGENTS.md** (`AGENTS.md` u root-u projekta) — repo-level instrukcije koje Codex automatski učitava
+  - TOML fajlovi sadrže `name`, `description`, `nickname_candidates` i `developer_instructions`
+  - `AGENTS.md` generator pakuje opšta pravila, routing i knowledge base za izabrane agente
+  - Nove komande:
+    - `Balkan DevOps: Generiši Codex Custom Agents (User Level)`
+    - `Balkan DevOps: Generiši Codex Custom Agents (Project Level)`
+    - `Balkan DevOps: Generiši Codex AGENTS.md (User Level)`
+    - `Balkan DevOps: Generiši Codex AGENTS.md (Project Level)`
 - **Antigravity (Gemini Code Assist) podrška** — Export Balkan DevOps agenata u Antigravity Knowledge Items (KIs).
   - Nova komanda: `Balkan DevOps: Instaliraj agente za Antigravity (Gemini)`
   - Generiše `metadata.json` i `artifacts/agent.md` u `~/.gemini/antigravity/knowledge/balkan-{ime}/`
   - Antigravity automatski usvaja "personu" i bazu znanja agenta.
 - Novi fajl: `src/antigravity-generator.ts` — logika za Antigravity (Gemini)
+- Novi fajl: `src/codex-generator.ts` — logika za Codex custom agents i `AGENTS.md`
+
+### Changed
+- Ažurirana marketplace i GitHub Pages dokumentacija sa Codex sekcijama i komandama
+- Requirements i feature opisi sada uključuju Codex kao podržanu platformu
 
 ## [0.0.8] - 2026-04-26
 

@@ -281,6 +281,27 @@ Otvori Command Palette (`Cmd+Shift+P`) → `Balkan DevOps: Instaliraj agente za 
 
 ---
 
+## 🤖 Codex Korišćenje
+
+Agenti sada rade i sa **OpenAI Codex**.
+
+Otvori Command Palette (`Cmd+Shift+P`) → `Balkan DevOps: Instaliraj agente za Codex`
+
+```
+# Custom agents:
+~/.codex/agents/balkan-sima.toml
+.codex/agents/balkan-mile.toml
+
+# AGENTS.md pravila:
+~/.codex/AGENTS.md
+./AGENTS.md
+```
+
+Custom agente koristiš tako što tražiš da Codex spawn-uje `balkan_sima`, `balkan_mile`, `balkan_zika` i ostale.
+`AGENTS.md` varijanta služi kao automatski globalni ili project-level instruction layer.
+
+---
+
 ## 💡 Kako koristiti agente
 
 ### Copilot Chat (direktno)

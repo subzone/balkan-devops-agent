@@ -7,6 +7,13 @@ import {
   installClaudeCodeProjectAgents,
 } from "./claudecode-generator";
 import { installAntigravityAgents } from "./antigravity-generator";
+import {
+  installCodex,
+  installCodexProjectAgents,
+  installCodexProjectAgentsMd,
+  installCodexUserAgents,
+  installCodexUserAgentsMd,
+} from "./codex-generator";
 
 const BASE_SYSTEM_SUFFIX = `
 Odgovaraš na srpskom jeziku. Daješ tehnički precizne odgovore u svom karakteru.
@@ -393,6 +400,27 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       "balkan-devops.installAntigravity",
       installAntigravityAgents
+    )
+  );
+
+  // Codex integration commands
+  context.subscriptions.push(
+    vscode.commands.registerCommand("balkan-devops.installCodex", installCodex),
+    vscode.commands.registerCommand(
+      "balkan-devops.installCodexUserAgents",
+      installCodexUserAgents
+    ),
+    vscode.commands.registerCommand(
+      "balkan-devops.installCodexUserAgentsMd",
+      installCodexUserAgentsMd
+    ),
+    vscode.commands.registerCommand(
+      "balkan-devops.installCodexProjectAgents",
+      installCodexProjectAgents
+    ),
+    vscode.commands.registerCommand(
+      "balkan-devops.installCodexProjectAgentsMd",
+      installCodexProjectAgentsMd
     )
   );
 }

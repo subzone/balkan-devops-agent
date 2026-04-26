@@ -178,6 +178,47 @@ Antigravity ih automatski detektuje i usvaja - pa možeš da kažeš `Oživi Toz
 
 ---
 
+## 🤖 Codex Podrška
+
+Radi i sa **OpenAI Codex** kroz custom agente i `AGENTS.md` pravila.
+
+Otvori Command Palette (`Cmd+Shift+P`) i kucaj:
+
+```
+Balkan DevOps: Instaliraj agente za Codex
+```
+
+Biraš gde:
+
+| Opcija | Gde se instalira | Za koga |
+|--------|-----------------|---------|
+| **👤 User Level — Custom Agents** | `~/.codex/agents/` | Tvoji agenti, svi projekti |
+| **📁 Project Level — Custom Agents** | `.codex/agents/` | Ceo tim, deli se preko git-a |
+| **🌍 User Level — AGENTS.md** | `~/.codex/AGENTS.md` | Globalna Codex pravila |
+| **🧭 Project Level — AGENTS.md** | `AGENTS.md` u root-u projekta | Pravila za ovaj repo |
+| **🔄 Oba** | Sve od gore | Kad hoćeš SVE |
+
+### Šta se generiše?
+
+`balkan-{agent}.toml` fajlovi koje Codex učitava kao custom agente. Svaki fajl sadrži:
+- `name`, `description` i `nickname_candidates`
+- `developer_instructions` sa karakterom i ekspertizom agenta
+- Knowledge base sadržaj
+- Cross-agent preporuke
+
+Pored toga može da se generiše i `AGENTS.md`:
+- `~/.codex/AGENTS.md` za globalna Codex pravila
+- `AGENTS.md` u root-u projekta za repo-level instrukcije
+- sadrži routing pravila, opšta uputstva i sažetak svih izabranih Balkan DevOps agenata
+
+### Kako se koristi?
+
+Codex custom agente koristiš tako što mu eksplicitno kažeš da spawn-uje određenog agenta, npr. `spawn balkan_sima` ili `spawn balkan_mile` za specifičan task.
+
+`AGENTS.md` varijanta služi kao širi instruction layer: Codex učitava ta pravila automatski i koristi ih kao project/global guidance.
+
+---
+
 ## ⏫ Ažuriranja
 
 **Automatski se ažurira.** VS Code se brine o tome.
@@ -216,7 +257,8 @@ src/
   ├── agents.ts                # 10 agenata ovde
   ├── amazonq-generator.ts     # Amazon Q / Kiro generator
   ├── claudecode-generator.ts  # Claude Code generator
-  └── antigravity-generator.ts # Antigravity (Gemini) generator
+  ├── antigravity-generator.ts # Antigravity (Gemini) generator
+  └── codex-generator.ts       # Codex custom agents generator
 package.json                   # Manifest
 ```
 
@@ -234,7 +276,7 @@ Znaš već.
 ## 📋 Šta ti treba
 
 - VS Code (noviji od 1.90)
-- GitHub Copilot **ILI** Amazon Q Developer **ILI** Claude Code **ILI** Antigravity (Gemini Code Assist)
+- GitHub Copilot **ILI** Amazon Q Developer **ILI** Claude Code **ILI** Antigravity (Gemini Code Assist) **ILI** Codex
 - Node.js 20+ (za dev)
 
 Nemaš nijedan? Onda ovo ne radi. Jednostavno.
