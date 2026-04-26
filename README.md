@@ -1,9 +1,11 @@
 # 🇷🇸 Balkan DevOps Agents
 
-10 GitHub Copilot chat agenata sa autentičnim Balkanskim karakterima za svaku DevOps disciplinu.
-Svaki agent je specijalizovan za određenu oblast i ima sopstveni stil komunikacije.
+**KRŠ I LOM!** Dosta više ljubaznih AI asistenata!
 
-📖 **[View Full Documentation](https://subzone.github.io/balkan-devops-agent/)**
+10 GitHub Copilot chat agenata koji ZAPRAVO govore kako treba - bez uvijanja, bez corporate floskula, direktno u stvar. 
+Svaki agent ima muda da ti kaže šta misli. Srpski jezik. Balkanski karakter. Tehnička preciznost.
+
+📖 **[Dokumentacija](https://subzone.github.io/balkan-devops-agent/)** (ako nisi lenj da pročitaš)
 
 [![VS Code Marketplace](https://img.shields.io/badge/VS%20Code-Marketplace-blue)](https://marketplace.visualstudio.com/items?itemName=subzone.balkan-devops-agents)
 [![GitHub Release](https://img.shields.io/github/v/release/subzone/balkan-devops-agent)](https://github.com/subzone/balkan-devops-agent/releases)
@@ -13,21 +15,24 @@ Svaki agent je specijalizovan za određenu oblast i ima sopstveni stil komunikac
 
 ## 🚀 Instalacija
 
-### Development (lokalno)
+**BACAJ TO u VS Code!**
+
+### Brzo (Marketplace)
+
+```bash
+ext install subzone.balkan-devops-agents
+```
+
+ILI otvori Extensions (Cmd+Shift+X), kucaj "Balkan DevOps Agents", Install, GOTOVO!
+
+### Development (za one koji znaju)
 
 ```bash
 git clone https://github.com/subzone/balkan-devops-agents
 cd balkan-devops-agents
 npm install
 npm run compile
-```
-
-Potom u VS Code: `F5` → otvori se novi Extension Development Host prozor.
-
-### Iz Marketplace
-
-```
-ext install subzone.balkan-devops-agents
+# F5 u VS Code, znaš već
 ```
 
 ---
@@ -49,114 +54,101 @@ ext install subzone.balkan-devops-agents
 
 ---
 
-## 💬 Primeri upotrebe
+## 💬 Kako se koristi
 
-### FinOps — Sima Krvopija
+**Otvori Copilot Chat, kucaj `@` i biraš ko ti treba.**
+
+### @sima — Kad te bocka račun
 ```
 @sima koji EC2 instancei troše najviše para?
 ```
-> *"A ko će OVO da plati?! Dev environment 24/7?! PA SI POLUDEO! Ugasi noću, uštedi $500 mesečno!"*
+> *"A ko će OVO da plati?! Dev environment 24/7?! PA SI POLUDEO! Ugasi noću, uštedi $500 mesečno! Spot instances - ODMAH!"*
 
-### Architecture Review — Žika Kurta
+### @zika — Kad ne znaš šta radiš
 ```
 @zika pregledaj ovu microservices arhitekturu
 ```
 > *"E moj ti... monolith na EC2 bez load balancera? KO TE TO UČIO?! Slušaj sad, objasniću ti kako se to radi PRAVILNO..."*
 
-### Security — Mile Pacov
+### @mile — Kad te zanima security (a TREBA DA TE ZANIMA!)
 ```
 @mile proveri ove IAM permisije
 ```
-> *"Pazi vamo... Security Group sa 0.0.0.0/0 na port 22? Pa ti si otvorio vrata za SVE lopove!"*
+> *"Pazi vamo... Security Group sa 0.0.0.0/0 na port 22? Pa ti si otvorio vrata za SVE lopove! Admin* permisije za Lambda? BRAVO!"*
 
-### Debugging — Toza Vampir
+### @toza — Kad pukne u 3 ujutru
 ```
 @toza analiziraj ovaj stack trace
 ```
-> *"Mirno je. Previše mirno. NullPointerException. Linija 247. Noćas u 3:17. Uvek noćas u 3:17."*
+> *"Mirno je. Previše mirno. NullPointerException. Linija 247. Noćas u 3:17. Uvek noćas u 3:17. Memory leak. Kao i pre mesec dana."*
 
-### Garbage Collection — Steva Đubre
+### @steva — Kad treba POČISTITI
 ```
 @steva počisti Docker images starije od 30 dana
 ```
-> *"Pa dokle više sa ovim smecem?! Logovi od 2019. godine?! KRŠ I LOM! Čistim sad!"*
+> *"Pa dokle više sa ovim smecem?! Logovi od 2019. godine?! KRŠ I LOM! Čistim sad! docker system prune -af --volumes - GOTOVO!"*
 
 ---
 
 ## � Ažuriranja
 
-Ekstenzija se **automatski ažurira** preko VS Code Marketplace-a:
+**Automatski se ažurira.** VS Code se brine o tome.
 
-- ✅ VS Code proverava nove verzije u pozadini
-- ✅ Ažuriranja se automatski preuzimaju i instaliraju
-- ✅ Dobijaš notifikaciju sa "Šta je novo?" linkom
-- ✅ Sve promene su dokumentovane u [CHANGELOG.md](CHANGELOG.md)
+Ako si nervozan i moraš ručno da proveriš: Extensions (Cmd+Shift+X) → potraži "Balkan DevOps Agents" → Update.
 
-**Ručna provera:**
-- Otvori Extensions panel (Cmd+Shift+X)
-- Potraži "Balkan DevOps Agents"
-- Klikni **Update** ako je dostupno
-
-Detaljne informacije: [docs/UPDATES.md](docs/UPDATES.md)
+Promene: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
 ## ⚠️ Disclaimer
 
-**Koristi na sopstvenu odgovornost.**
+**NE GARANTUJEM NIŠTA.**
 
-Ova ekstenzija je eksperimentalna i ne garantuje tačnost predloga. Agenti su AI asistenata koji mogu grešiti.
+Ovo su AI agenti, ne bogovi. Mogu da zajebu. TI si odgovoran za svoje sisteme.
 
-- ❌ Ne koristite za kritične production sisteme bez pregleda
-- ❌ Ne primenjujte sugestije agenata bez validacije
-- ❌ Ne šaljite osetljive podatke u chat
-- ✅ Uvek pregledajte kod/infrastrukturu pre izvršavanja
-- ✅ Tretirajte odgovore kao **savete**, ne garantovane rešenja
+- ❌ Production bez pregleda? Tvoj problem.
+- ❌ Slepo izvršavaš komande? Tvoj problem.
+- ❌ Osetljivi podaci u chat? Tvoj problem.
+- ✅ Pregledaj kod UVEK pre izvršavanja.
+- ✅ Saveti, ne garancije.
 
-**Autor ne snosi odgovornost za** štetu, data loss, troškove ili incident koji nastanu upotrebom ovog softvera. MIT licenca eksplicitno naznačava: **NO WARRANTY**.
+**Pokvaريš nešto? Tvoja briga.** Data loss? Troškovi? Incidenti? **TVOJ PROBLEM.**
+
+MIT licenca kaže: **NO WARRANTY**. Razumeš? Dobro.
 
 ---
 
 ## 🛠️ Razvoj
 
-### Struktura projekta
+**Za developere:**
 
 ```
-balkan-devops-agents/
-├── src/
-│   ├── extension.ts    # Glavni entry point, registracija agenata
-│   └── agents.ts       # Definicije svih 10 agenata
-├── .vscode/
-│   ├── launch.json     # Debug konfiguracija
-│   └── tasks.json      # Build taskovi
-├── package.json        # Extension manifest + chatParticipants
-└── tsconfig.json
+src/
+  ├── extension.ts    # Entry point
+  └── agents.ts       # 10 agenata ovde
+package.json          # Manifest
 ```
 
-### Dodavanje novog agenta
+**Dodaj novog agenta:**
+1. `src/agents.ts` → dodaj u `AGENTS` niz
+2. `package.json` → registruj u `contributes.chatParticipants`
+3. Kompajliraj, testuj, gotovo
 
-1. Dodaj objekat u `AGENTS` niz u `src/agents.ts`
-2. Registruj u `package.json` pod `contributes.chatParticipants`
-3. Dodaj follow-up predloge u `getFollowupsForAgent()` u `extension.ts`
-
-### Pakovanje
-
-```bash
-npm run package
-# Generiše balkan-devops-agents-1.0.0.vsix
-```
+Znaš već.
 
 ---
 
-## 📋 Zahtevi
+## 📋 Šta ti treba
 
-- VS Code `^1.90.0`
-- GitHub Copilot Chat (aktivna pretplata)
-- Node.js `^20.0.0`
+- VS Code (noviji od 1.90)
+- GitHub Copilot (MORA biti aktivna pretplata)
+- Node.js 20+ (za dev)
+
+Nemaš Copilot pretplatu? Onda ovo ne radi. Jednostavno.
 
 ---
 
 ## 📄 Licenca
 
-MIT © Milenko Mitrović
+MIT © Milenko Mitrović / subzone
 # balkan-devops-agent

@@ -1,7 +1,7 @@
 {
   "name": "balkan-devops-agents",
   "displayName": "Balkan DevOps Agents",
-  "description": "10 GitHub Copilot chat agenata sa Balkanskim karakterima za DevOps, FinOps, Security i Cloud Engineering",
+  "description": "10 AI agenata koji pričaju srpski i kažu ti ISTINU bez uvijanja. FinOps? Security? Debugging u 3 ujutru? Cleanup? Oni znaju. Dosta više corporate bullshit-a.",
   "version": "0.0.5",
   "license": "MIT",
   "engines": {
