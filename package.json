@@ -2,7 +2,7 @@
   "name": "balkan-devops-agents",
   "displayName": "Balkan DevOps Agents",
   "description": "10 GitHub Copilot chat agenata sa Balkanskim karakterima za DevOps, FinOps, Security i Cloud Engineering",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "license": "MIT",
   "engines": {
     "vscode": "^1.116.0"
@@ -45,7 +45,13 @@
         "fullName": "Steva Đubre",
         "description": "🗑️ Garbage Collection & Data Cleanup — Brutalno čisti logove, baze i dead code",
         "isSticky": false,
-        "icon": "assets/agents/steva.svg"
+        "icon": "assets/agents/steva.svg",
+        "sampleQuestions": [
+          "Kako da počistim stare S3 buckete?",
+          "Napravi mi lifecycle policy za logove starije od 30 dana",
+          "Koje baze imam sa previše dead rows?",
+          "Napravi skriptu za brisanje unused Docker images"
+        ]
       },
       {
         "id": "balkan-devops.toza",
@@ -53,7 +59,13 @@
         "fullName": "Toza Vampir",
         "description": "🌙 Night Shift Monitoring & Debugging — Analizira logove i greške u sitnim satima",
         "isSticky": false,
-        "icon": "assets/agents/toza.svg"
+        "icon": "assets/agents/toza.svg",
+        "sampleQuestions": [
+          "Analiziraj ovaj stack trace",
+          "Koje greške su se desile između 2-4 ujutru?",
+          "Pomozi mi da debugujem NullPointerException",
+          "Napravi query za CloudWatch alerte noćnih padova"
+        ]
       },
       {
         "id": "balkan-devops.mile",
@@ -61,7 +73,13 @@
         "fullName": "Mile Pacov",
         "description": "🕵️ Penetration Testing & Security Audit — Njuši rupe u sistemu i IAM permisijama",
         "isSticky": false,
-        "icon": "assets/agents/mile.svg"
+        "icon": "assets/agents/mile.svg",
+        "sampleQuestions": [
+          "Proveri ove IAM permisije",
+          "Ima li rupu u ovom security group-u?",
+          "Skeniraj Terraform kod za hardcoded secrets",
+          "Koji portovi su nepotrebno otvoreni?"
+        ]
       },
       {
         "id": "balkan-devops.sima",
@@ -69,7 +87,13 @@
         "fullName": "Sima Krvopija",
         "description": "💸 FinOps & Cloud Cost Optimization — Gasi sve što košta, pita 'ko će ovo da plati?'",
         "isSticky": false,
-        "icon": "assets/agents/sima.svg"
+        "icon": "assets/agents/sima.svg",
+        "sampleQuestions": [
+          "Koji EC2 instancei troše najviše para?",
+          "Predloži Reserved Instance plan za našu infrastrukturu",
+          "Koliko para mogu da uštedim sa Spot instances?",
+          "Analiziraj troškove S3 storage-a za poslednjih 30 dana"
+        ]
       },
       {
         "id": "balkan-devops.uske",
@@ -77,7 +101,13 @@
         "fullName": "Uške Satara",
         "description": "✂️ Code Refactoring & Deletion — Seče sve što je višak, bez milosti prema legacy kodu",
         "isSticky": false,
-        "icon": "assets/agents/uske.svg"
+        "icon": "assets/agents/uske.svg",
+        "sampleQuestions": [
+          "Koji kod mogu da izbrišem iz ovog modula?",
+          "Refaktoriši ovu funkciju, previše je kompleksna",
+          "Nađi dead code u projektu",
+          "Koje dependencies nisu korišćene?"
+        ]
       },
       {
         "id": "balkan-devops.joca",
@@ -85,7 +115,13 @@
         "fullName": "Joca Mutni",
         "description": "🔐 Encryption & Data Masking — Šifruje, maskira i nikome ne veruje",
         "isSticky": false,
-        "icon": "assets/agents/joca.svg"
+        "icon": "assets/agents/joca.svg",
+        "sampleQuestions": [
+          "Kako da šifrujem ove kredencijale?",
+          "Napravi mi script za maskiranje PII podataka",
+          "Proveri da li ovi secreti cure negde",
+          "Implementiraj envelope encryption za ovu bazu"
+        ]
       },
       {
         "id": "balkan-devops.gile",
@@ -93,7 +129,13 @@
         "fullName": "Gile Zver",
         "description": "⚡ Heavy Processing & Big Data — Melje podatke, traži više RAM-a i GPU snage",
         "isSticky": false,
-        "icon": "assets/agents/gile.svg"
+        "icon": "assets/agents/gile.svg",
+        "sampleQuestions": [
+          "Kako da optimizujem ovaj Spark job?",
+          "Treba mi više RAM-a za obradu podataka",
+          "Napravi paralelizovanu verziju ovog ETL-a",
+          "Pomozi mi da ubrza ovaj batch processing"
+        ]
       },
       {
         "id": "balkan-devops.laki",
@@ -101,7 +143,13 @@
         "fullName": "Laki Zmija",
         "description": "🐍 Workarounds & Legacy Bridges — Pronalazi prečice kad dokumentacija zakaže",
         "isSticky": false,
-        "icon": "assets/agents/laki.svg"
+        "icon": "assets/agents/laki.svg",
+        "sampleQuestions": [
+          "Kako da integrujem ovu legacy aplikaciju sa novim API-jem?",
+          "Treba mi workaround za ovaj bug u biblioteci",
+          "Napravi bridge između Python 2 i Python 3 koda",
+          "Kako da migrujem podatke bez downtime-a?"
+        ]
       },
       {
         "id": "balkan-devops.zika",
@@ -109,7 +157,13 @@
         "fullName": "Žika Kurta",
         "description": "🏛️ Architecture Advisor & Critic — Zna sve o AWS Well-Architected, ali te i ismeje",
         "isSticky": false,
-        "icon": "assets/agents/zika.svg"
+        "icon": "assets/agents/zika.svg",
+        "sampleQuestions": [
+          "Pregledaj ovu microservices arhitekturu",
+          "Da li ova infrastruktura prati Well-Architected Framework?",
+          "Kako da poboljšam resilience ovog sistema?",
+          "Predloži disaster recovery plan"
+        ]
       },
       {
         "id": "balkan-devops.moma",
@@ -117,7 +171,13 @@
         "fullName": "Moma Špijun",
         "description": "👁️ Auditing & User Activity Tracking — Sve vidi, sve beleži, sve zna",
         "isSticky": false,
-        "icon": "assets/agents/moma.svg"
+        "icon": "assets/agents/moma.svg",
+        "sampleQuestions": [
+          "Ko je promenio ovu IAM policy?",
+          "Analiziraj CloudTrail logove za poslednja 24h",
+          "Nađi sve neautorizovane API pozive",
+          "Napravi audit report za compliance"
+        ]
       }
     ],
     "commands": [

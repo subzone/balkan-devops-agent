@@ -42,9 +42,181 @@ Odgovaraš na srpskom jeziku. Daješ tehnički precizne odgovore u svom karakter
 Ako korisnik postavi pitanje na engleskom, odgovaraš na srpskom ali tehničke termine
 (nazive servisa, komande, kod) ostavljaš na engleskom.
 Uvek ostani u karakteru — nikad ne izlazi iz role.
+
+Ako pitanje nije iz tvoje oblasti ekspertize, preporuči relevantnog agenta:
+- Troškovi/FinOps → @sima
+- Security/IAM → @mile
+- Arhitektura → @zika
+- Debugging/Logs → @toza
+- Cleanup/Data → @steva
+- Refactoring → @uske
+- Encryption → @joca
+- Big Data → @gile
+- Workarounds → @laki
+- Auditing → @moma
 `;
+function getHelpMessage(agent) {
+    const knowledgeBase = getAgentKnowledgeBase(agent.name);
+    return `# 🎯 ${agent.fullName} - ${agent.role}
+
+**Karakter:** ${agent.character}
+
+## 🔧 Šta ja radim?
+
+${agent.systemPrompt}
+
+## 💡 Primer pitanja:
+
+${getSampleQuestions(agent.name)}
+
+## 📚 Knowledge Base:
+
+${knowledgeBase}
+
+## 🔗 Drugi agenti:
+
+Ako tvoje pitanje nije iz moje oblasti, probaj:
+${getOtherAgentsList(agent.name)}
+
+---
+💬 **Samo pitaj!** Odgovaraću u svom stilu.`;
+}
+function getSampleQuestions(agentName) {
+    const questions = {
+        steva: [
+            "Kako da počistim stare S3 buckete?",
+            "Napravi lifecycle policy za logove starije od 30 dana",
+            "Koje baze imam sa previše dead rows?"
+        ],
+        toza: [
+            "Analiziraj ovaj stack trace",
+            "Koje greške su se desile između 2-4 ujutru?",
+            "Pomozi mi da debugujem NullPointerException"
+        ],
+        mile: [
+            "Proveri ove IAM permisije",
+            "Ima li rupu u ovom security group-u?",
+            "Skeniraj Terraform kod za hardcoded secrets"
+        ],
+        sima: [
+            "Koji EC2 instancei troše najviše para?",
+            "Predloži Reserved Instance plan za našu infrastrukturu",
+            "Analiziraj troškove S3 storage-a"
+        ],
+        uske: [
+            "Koji kod mogu da izbrišem iz ovog modula?",
+            "Refaktoriši ovu funkciju, previše je kompleksna",
+            "Nađi dead code u projektu"
+        ],
+        joca: [
+            "Kako da šifrujem ove kredencijale?",
+            "Napravi mi script za maskiranje PII podataka",
+            "Implementiraj envelope encryption"
+        ],
+        gile: [
+            "Kako da optimizujem ovaj Spark job?",
+            "Treba mi više RAM-a za obradu podataka",
+            "Napravi paralelizovanu verziju ovog ETL-a"
+        ],
+        laki: [
+            "Kako da integrisem legacy aplikaciju sa novim API-jem?",
+            "Treba mi workaround za ovaj bug",
+            "Kako da migrujem podatke bez downtime-a?"
+        ],
+        zika: [
+            "Pregledaj ovu microservices arhitekturu",
+            "Da li ova infrastruktura prati Well-Architected Framework?",
+            "Predloži disaster recovery plan"
+        ],
+        moma: [
+            "Ko je promenio ovu IAM policy?",
+            "Analiziraj CloudTrail logove za poslednjih 24h",
+            "Napravi audit report za compliance"
+        ]
+    };
+    return (questions[agentName] || []).map((q, i) => `${i + 1}. \`${q}\``).join("\n");
+}
+function getAgentKnowledgeBase(agentName) {
+    const knowledgeMap = {
+        sima: "✅ `knowledge/sima/finops-best-practices.md`",
+        mile: "✅ `knowledge/mile/security-checklist.md`",
+        zika: "✅ `knowledge/zika/well-architected-framework.md`",
+        toza: "✅ `knowledge/toza/debugging-guide.md`",
+        steva: "🔄 U pripremi...",
+        uske: "🔄 U pripremi...",
+        joca: "🔄 U pripremi...",
+        gile: "🔄 U pripremi...",
+        laki: "🔄 U pripremi...",
+        moma: "🔄 U pripremi..."
+    };
+    return knowledgeMap[agentName] || "🔄 U pripremi...";
+}
+function getOtherAgentsList(currentAgent) {
+    const agents = [
+        "💸 @sima - FinOps & Cost Optimization",
+        "🕵️ @mile - Security & Penetration Testing",
+        "🏛️ @zika - Architecture & Well-Architected",
+        "🌙 @toza - Debugging & Monitoring",
+        "🗑️ @steva - Data Cleanup & Garbage Collection",
+        "✂️ @uske - Code Refactoring & Deletion",
+        "🔐 @joca - Encryption & Data Masking",
+        "⚡ @gile - Heavy Processing & Big Data",
+        "🐍 @laki - Workarounds & Legacy Systems",
+        "👁️ @moma - Auditing & Compliance"
+    ];
+    return agents
+        .filter(a => !a.includes(`@${currentAgent}`))
+        .map(a => `  - ${a}`)
+        .join("\n");
+}
+async function getWorkspaceContext() {
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders || workspaceFolders.length === 0) {
+        return "";
+    }
+    const contextFiles = [];
+    const patterns = [
+        "**/*.tf", // Terraform
+        "**/*.yaml", // K8s, CloudFormation
+        "**/*.yml",
+        "**/Dockerfile", // Docker
+        "**/docker-compose*.yml",
+        "**/.env.example", // Config examples (ne .env sa secrets!)
+        "**/package.json", // Dependencies
+        "**/requirements.txt",
+        "**/Gemfile"
+    ];
+    try {
+        for (const pattern of patterns) {
+            const files = await vscode.workspace.findFiles(pattern, "**/node_modules/**", 20);
+            contextFiles.push(...files.map(f => f.fsPath));
+        }
+        if (contextFiles.length === 0) {
+            return "";
+        }
+        let context = "\n\n[WORKSPACE CONTEXT]\n";
+        context += `Found ${contextFiles.length} relevant files:\n`;
+        for (const file of contextFiles.slice(0, 10)) { // Limit to first 10
+            const relativePath = vscode.workspace.asRelativePath(file);
+            context += `- ${relativePath}\n`;
+        }
+        if (contextFiles.length > 10) {
+            context += `... and ${contextFiles.length - 10} more files\n`;
+        }
+        context += "[/WORKSPACE CONTEXT]\n\n";
+        return context;
+    }
+    catch (error) {
+        return "";
+    }
+}
 async function createAgentHandler(agent) {
     return async (request, context, response, token) => {
+        // Handle help command
+        if (request.prompt.toLowerCase().trim() === "help" || request.prompt.toLowerCase().trim() === "pomoć") {
+            response.markdown(getHelpMessage(agent));
+            return {};
+        }
         const models = await vscode.lm.selectChatModels({
             vendor: "copilot",
             family: "gpt-4o",
@@ -74,8 +246,10 @@ async function createAgentHandler(agent) {
                 }
             }
         }
+        // Get workspace context (Terraform, YAML, Docker files)
+        const workspaceContext = await getWorkspaceContext();
         // Compose system prompt as first user message (VS Code LM API style)
-        const systemMessage = vscode.LanguageModelChatMessage.User(`[SYSTEM] ${agent.systemPrompt}\n${BASE_SYSTEM_SUFFIX}\n[/SYSTEM]`);
+        const systemMessage = vscode.LanguageModelChatMessage.User(`[SYSTEM] ${agent.systemPrompt}\n${BASE_SYSTEM_SUFFIX}${workspaceContext}\n[/SYSTEM]`);
         const userMessage = vscode.LanguageModelChatMessage.User(request.prompt);
         const messages = [systemMessage, ...history, userMessage];
         try {

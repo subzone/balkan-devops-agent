@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.4] - 2026-04-26
+
+### Added
+- **Help command**: Svaki agent sada odgovara na "help" ili "pomoć" sa detaljnim informacijama
+- **Sample questions**: Svi agenti imaju predefinisane primere pitanja u package.json
+- **Knowledge base system**: Markdown fajlovi sa domain expertise za svaki tim:
+  - Sima: FinOps best practices (finops-best-practices.md)
+  - Mile: Security checklist (security-checklist.md)
+  - Žika: Well-Architected Framework (well-architected-framework.md)
+  - Toza: Debugging guide (debugging-guide.md)
+- **Workspace context awareness**: Agenti automatski detektuju Terraform, YAML, Docker i config fajlove u workspace-u
+- **Cross-agent references**: Agenti preporučuju jedni druge kada je pitanje van njihove oblasti
+- **Agent documentation pages**: Kompletna dokumentacija svih agenata na docs/agents/README.md
+- Knowledge base README sa strukturom i principima
+
+### Changed
+- Prošireni system prompt-ovi da uključuju cross-agent recommendations
+- Ažuriran getFollowups() sa relevantnim follow-up pitanjima za svaki tim
+
 ## [0.0.3] - 2026-04-26
 
 ### Changed
