@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.6] - 2026-04-26
+
+### Added
+- **Complete Knowledge Base**: Svih 10 agenata sada imaju comprehensive domain guides:
+  - **Steva**: `knowledge/steva/garbage-collection-guide.md` - Multi-cloud lifecycle policies, Docker/K8s cleanup, log management, Terraform state cleanup, CI/CD artifacts, automated scripts
+  - **Uške**: `knowledge/uske/refactoring-guide.md` - Dead code detection, complexity analysis, refactoring patterns, IaC optimization, SQL tuning, git history cleanup
+  - **Joca**: `knowledge/joca/encryption-secrets-guide.md` - KMS (AWS/Azure/GCP/Vault), secrets management, TLS/mTLS, PII masking, compliance (GDPR/PCI-DSS/HIPAA)
+  - **Gile**: `knowledge/gile/big-data-optimization-guide.md` - Spark optimization, Kafka tuning, GPU workloads, ETL pipelines, Kubernetes HPA/VPA/KEDA
+  - **Laki**: `knowledge/laki/workaround-strategies.md` - Legacy system integration, API workarounds, migration patterns, cross-cloud transfers, SSH tunneling
+  - **Moma**: `knowledge/moma/auditing-compliance-guide.md` - Cloud audit trails, SIEM (Splunk/ELK/Sentinel), compliance frameworks (SOC 2/ISO 27001), forensics
+- Extension now references all 10 knowledge base files in help command
+
+### Changed
+- **BRUTAL DOCUMENTATION REWRITE** - All docs now in authentic Steva Đubre style:
+  - README.md: "KRŠ I LOM! Dosta više ljubaznih AI asistenata!"
+  - Marketplace description: Direct, no corporate BS
+  - GitHub Pages: Aggressive intro, "NE GARANTUJEM NIŠTA" disclaimer
+  - Installation: "BACAJ TO u VS Code!"
+  - Requirements: "Nemaš Copilot? Onda ovo ne radi. Jednostavno."
+  - Contributing: "Znaš već kako se radi."
+- Footer changed to "KRŠ I LOM! 🇷🇸" (removed soft corporate messaging)
+
+### Improved
+- All knowledge base guides include:
+  - Multi-cloud examples (AWS/Azure/GCP/Alibaba)
+  - Code snippets and practical commands
+  - Best practices and anti-patterns
+  - Authentic agent voice throughout
+  - 10+ major sections each (500-700 lines)
+
 ## [0.0.5] - 2026-04-26
 
 ### Added
