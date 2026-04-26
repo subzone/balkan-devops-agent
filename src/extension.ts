@@ -111,12 +111,12 @@ function getAgentKnowledgeBase(agentName: string): string {
     mile: "✅ `knowledge/mile/security-checklist.md`",
     zika: "✅ `knowledge/zika/well-architected-framework.md`",
     toza: "✅ `knowledge/toza/debugging-guide.md`",
-    steva: "🔄 U pripremi...",
-    uske: "🔄 U pripremi...",
-    joca: "🔄 U pripremi...",
-    gile: "🔄 U pripremi...",
-    laki: "🔄 U pripremi...",
-    moma: "🔄 U pripremi..."
+    steva: "✅ `knowledge/steva/garbage-collection-guide.md`",
+    uske: "✅ `knowledge/uske/refactoring-guide.md`",
+    joca: "✅ `knowledge/joca/encryption-secrets-guide.md`",
+    gile: "✅ `knowledge/gile/big-data-optimization-guide.md`",
+    laki: "✅ `knowledge/laki/workaround-strategies.md`",
+    moma: "✅ `knowledge/moma/auditing-compliance-guide.md`"
   };
   
   return knowledgeMap[agentName] || "🔄 U pripremi...";
