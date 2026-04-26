@@ -2,7 +2,7 @@
   "name": "balkan-devops-agents",
   "displayName": "Balkan DevOps Agents",
   "description": "10 GitHub Copilot chat agenata sa Balkanskim karakterima za DevOps, FinOps, Security i Cloud Engineering",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "license": "MIT",
   "engines": {
     "vscode": "^1.116.0"
@@ -47,10 +47,10 @@
         "isSticky": false,
         "icon": "assets/agents/steva.svg",
         "sampleQuestions": [
-          "Kako da počistim stare S3 buckete?",
+          "Kako da počistim stare S3/Azure Blob/GCS buckete?",
           "Napravi mi lifecycle policy za logove starije od 30 dana",
-          "Koje baze imam sa previše dead rows?",
-          "Napravi skriptu za brisanje unused Docker images"
+          "PostgreSQL VACUUM - koje baze trebaju čišćenje?",
+          "Napravi skriptu za brisanje unused Docker images i volumes"
         ]
       },
       {
@@ -61,10 +61,10 @@
         "isSticky": false,
         "icon": "assets/agents/toza.svg",
         "sampleQuestions": [
-          "Analiziraj ovaj stack trace",
+          "Analiziraj ovaj stack trace iz Kubernetes pod-a",
           "Koje greške su se desile između 2-4 ujutru?",
-          "Pomozi mi da debugujem NullPointerException",
-          "Napravi query za CloudWatch alerte noćnih padova"
+          "Pomozi mi da debugujem memory leak u Java aplikaciji",
+          "CloudWatch Insights query za 5xx errors u poslednjih 24h"
         ]
       },
       {
@@ -75,10 +75,10 @@
         "isSticky": false,
         "icon": "assets/agents/mile.svg",
         "sampleQuestions": [
-          "Proveri ove IAM permisije",
-          "Ima li rupu u ovom security group-u?",
-          "Skeniraj Terraform kod za hardcoded secrets",
-          "Koji portovi su nepotrebno otvoreni?"
+          "Proveri Azure RBAC permisije za ovaj resource group",
+          "Ima li rupu u ovom AWS security group-u?",
+          "Skeniraj Terraform kod za hardcoded secrets sa tfsec",
+          "Koji portovi su nepotrebno otvoreni u GCP firewall rules?"
         ]
       },
       {
@@ -89,10 +89,10 @@
         "isSticky": false,
         "icon": "assets/agents/sima.svg",
         "sampleQuestions": [
-          "Koji EC2 instancei troše najviše para?",
-          "Predloži Reserved Instance plan za našu infrastrukturu",
-          "Koliko para mogu da uštedim sa Spot instances?",
-          "Analiziraj troškove S3 storage-a za poslednjih 30 dana"
+          "Koji EC2/Azure VM/GCE instancei troše najviše para?",
+          "Predloži Reserved Instance plan (AWS/Azure/GCP)",
+          "Koliko para mogu da uštedim sa Spot/Preemptible instances?",
+          "Analiziraj S3/Blob/GCS storage troškove za poslednjih 30 dana"
         ]
       },
       {
@@ -103,10 +103,10 @@
         "isSticky": false,
         "icon": "assets/agents/uske.svg",
         "sampleQuestions": [
-          "Koji kod mogu da izbrišem iz ovog modula?",
-          "Refaktoriši ovu funkciju, previše je kompleksna",
-          "Nađi dead code u projektu",
-          "Koje dependencies nisu korišćene?"
+          "Refaktoriši ovaj Terraform modul, previše je kompleksan",
+          "Nađi dead code u ovom projektu",
+          "Optimizuj ovaj Dockerfile - previše je slojevit",
+          "Koje npm/pip pakete mogu da izbrišem?"
         ]
       },
       {
@@ -117,10 +117,10 @@
         "isSticky": false,
         "icon": "assets/agents/joca.svg",
         "sampleQuestions": [
-          "Kako da šifrujem ove kredencijale?",
+          "Kako da šifrujem secrets u Kubernetes sa Sealed Secrets?",
           "Napravi mi script za maskiranje PII podataka",
-          "Proveri da li ovi secreti cure negde",
-          "Implementiraj envelope encryption za ovu bazu"
+          "Setup AWS KMS/Azure Key Vault/GCP KMS encryption",
+          "Implementiraj mTLS za microservices komunikaciju"
         ]
       },
       {
@@ -131,10 +131,10 @@
         "isSticky": false,
         "icon": "assets/agents/gile.svg",
         "sampleQuestions": [
-          "Kako da optimizujem ovaj Spark job?",
-          "Treba mi više RAM-a za obradu podataka",
-          "Napravi paralelizovanu verziju ovog ETL-a",
-          "Pomozi mi da ubrza ovaj batch processing"
+          "Kako da optimizujem ovaj Spark job na EMR/Dataproc?",
+          "Treba mi više RAM-a za obradu podataka u Kubernetes",
+          "Napravi paralelizovanu verziju ovog ETL-a sa Airflow",
+          "Setup Kafka cluster sa high throughput configom"
         ]
       },
       {
@@ -145,10 +145,10 @@
         "isSticky": false,
         "icon": "assets/agents/laki.svg",
         "sampleQuestions": [
-          "Kako da integrujem ovu legacy aplikaciju sa novim API-jem?",
-          "Treba mi workaround za ovaj bug u biblioteci",
-          "Napravi bridge između Python 2 i Python 3 koda",
-          "Kako da migrujem podatke bez downtime-a?"
+          "Kako da integrišem legacy SOAP servis sa REST API-jem?",
+          "Treba mi workaround za broken Terraform provider",
+          "Migracija sa AWS na Azure bez downtime-a?",
+          "Docker multi-arch build za ARM i x86"
         ]
       },
       {
@@ -159,10 +159,10 @@
         "isSticky": false,
         "icon": "assets/agents/zika.svg",
         "sampleQuestions": [
-          "Pregledaj ovu microservices arhitekturu",
-          "Da li ova infrastruktura prati Well-Architected Framework?",
-          "Kako da poboljšam resilience ovog sistema?",
-          "Predloži disaster recovery plan"
+          "Pregledaj ovu Kubernetes microservices arhitekturu",
+          "Da li ova Terraform infrastruktura prati Well-Architected?",
+          "Predloži multi-region disaster recovery plan",
+          "Review event-driven arhitekture sa Kafka/EventBridge"
         ]
       },
       {
@@ -173,10 +173,10 @@
         "isSticky": false,
         "icon": "assets/agents/moma.svg",
         "sampleQuestions": [
-          "Ko je promenio ovu IAM policy?",
-          "Analiziraj CloudTrail logove za poslednja 24h",
-          "Nađi sve neautorizovane API pozive",
-          "Napravi audit report za compliance"
+          "Ko je promenio ovu IAM policy u AWS CloudTrail-u?",
+          "Analiziraj Azure Activity Log za poslednjih 24h",
+          "Napravi SOC 2 compliance audit report",
+          "Terraform state file - ko je deployment-ovao pre 2 sata?"
         ]
       }
     ],

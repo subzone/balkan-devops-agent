@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.5] - 2026-04-26
+
+### Added
+- **Multi-cloud expertise**: Svi agenti sada pokrivaju AWS, Azure, GCP i Alibaba Cloud
+- **Infrastructure as Code**: Expanded Terraform, CloudFormation, ARM templates support
+- **Container orchestration**: Deep Kubernetes, Docker, Helm, Kustomize knowledge
+- **Linux expertise**: System administration, performance tuning, security hardening
+
+### Changed
+- Updated all agent system prompts with comprehensive multi-cloud capabilities
+- Sample questions now showcase AWS/Azure/GCP/Alibaba examples
+- Cross-cloud migration scenarios (AWS → Azure, etc.)
+- Kubernetes and container-native workflows emphasized
+
+### Improved
+- **Steva**: Multi-cloud storage cleanup (S3/Blob/GCS/OSS), container cleanup
+- **Toza**: Multi-cloud log aggregation (CloudWatch/Azure Monitor/GCP Logging)
+- **Mile**: Cross-cloud IAM (AWS IAM, Azure RBAC, GCP IAM, Alibaba RAM)
+- **Sima**: Multi-cloud cost optimization across all major providers
+- **Uške**: IaC refactoring (Terraform modules, Dockerfile optimization)
+- **Joca**: Multi-cloud KMS (AWS/Azure/GCP Key Management), K8s secrets
+- **Gile**: Cloud-native big data (EMR, HDInsight, Dataproc, MaxCompute)
+- **Laki**: Cross-cloud migration workarounds, multi-arch Docker builds
+- **Žika**: Multi-cloud Well-Architected frameworks, Kubernetes architecture
+- **Moma**: Multi-cloud audit (CloudTrail, Azure Activity Log, GCP Audit Logs)
+
 ## [0.0.4] - 2026-04-26
 
 ### Added
