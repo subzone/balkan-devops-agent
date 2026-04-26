@@ -3,6 +3,12 @@
 10 GitHub Copilot chat agenata sa autentičnim Balkanskim karakterima za svaku DevOps disciplinu.
 Svaki agent je specijalizovan za određenu oblast i ima sopstveni stil komunikacije.
 
+📖 **[View Full Documentation](https://subzone.github.io/balkan-devops-agent/)**
+
+[![VS Code Marketplace](https://img.shields.io/badge/VS%20Code-Marketplace-blue)](https://marketplace.visualstudio.com/items?itemName=subzone.balkan-devops-agents)
+[![GitHub Release](https://img.shields.io/github/v/release/subzone/balkan-devops-agent)](https://github.com/subzone/balkan-devops-agent/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ---
 
 ## 🚀 Instalacija

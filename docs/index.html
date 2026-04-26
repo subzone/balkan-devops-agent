@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="10 GitHub Copilot chat agents with authentic Balkan characters for every DevOps discipline">
+    <title>Balkan DevOps Agents - VS Code Extension</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+        
+        header h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        header p {
+            font-size: 1.4em;
+            margin-bottom: 30px;
+        }
+        
+        .install-btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.2em;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+        
+        .install-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        main {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        section {
+            margin-bottom: 60px;
+        }
+        
+        h2 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .agent-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        
+        .agent-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .agent-card h3 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .agent-card .agent-emoji {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .agent-card .agent-role {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .agent-card .agent-command {
+            background: #2d3748;
+            color: #48bb78;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .example-section {
+            background: #f7fafc;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .example-section h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        pre {
+            background: #2d3748;
+            color: #48bb78;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        code {
+            font-family: 'Courier New', monospace;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .feature {
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+        }
+        
+        footer a {
+            color: white;
+            text-decoration: underline;
+        }
+        
+        .badge {
+            display: inline-block;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🇷🇸 Balkan DevOps Agents</h1>
+            <p>10 GitHub Copilot chat agents with authentic Balkan characters for every DevOps discipline</p>
+            <a href="https://marketplace.visualstudio.com/items?itemName=subzone.balkan-devops-agents" class="install-btn">Install from Marketplace</a>
+            <br><br>
+            <a href="https://github.com/subzone/balkan-devops-agent" class="install-btn" style="background: #2d3748; color: white;">View on GitHub</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <main>
+            <section id="about">
+                <h2>About</h2>
+                <p style="font-size: 1.2em; line-height: 1.8;">
+                    Balkan DevOps Agents brings personality and expertise to your VS Code workflow. Each agent is a specialized DevOps professional 
+                    with their own unique character, communication style, and area of expertise. From garbage collection to cloud cost optimization, 
+                    from security audits to architecture reviews—these agents speak your language (literally, in Serbian!) and get the job done.
+                </p>
+            </section>
+
+            <section id="features">
+                <h2>Features</h2>
+                <div class="features">
+                    <div class="feature">
+                        <div class="feature-icon">🎭</div>
+                        <h3>Authentic Characters</h3>
+                        <p>Each agent has a unique personality and communication style</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🔧</div>
+                        <h3>Specialized Expertise</h3>
+                        <p>10 different DevOps disciplines covered</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">💬</div>
+                        <h3>GitHub Copilot Integration</h3>
+                        <p>Seamlessly integrated with VS Code Copilot Chat</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🌍</div>
+                        <h3>Balkan Spirit</h3>
+                        <p>Communicates in Serbian with authentic regional flavor</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="agents">
+                <h2>Meet the Agents</h2>
+                <div class="agents-grid">
+                    <div class="agent-card">
+                        <span class="agent-emoji">🗑️</span>
+                        <h3>Steva Đubre</h3>
+                        <p class="agent-role">Garbage Collection & Data Cleanup</p>
+                        <p>Brutalno čisti logove, baze i dead code. Nema milosti za stare podatke.</p>
+                        <span class="agent-command">@steva</span>
+                    </div>
+
+                    <div class="agent-card">
+                        <span class="agent-emoji">🌙</span>
+                        <h3>Toza Vampir</h3>
+                        <p class="agent-role">Night Shift Monitoring & Debugging</p>
+                        <p>Analizira logove i greške u sitnim satima. Živi noću, debugging-uje do zore.</p>
+                        <span class="agent-command">@toza</span>
+                    </div>
+
+                    <div class="agent-card">
+                        <span class="agent-emoji">🕵️</span>
+                        <h3>Mile Pacov</h3>
+                        <p class="agent-role">Penetration Testing & Security Audit</p>
+                        <p>Njuši rupe u sistemu i IAM permisijama. Ništa mu ne promakne.</p>
+                        <span class="agent-command">@mile</span>
+                    </div>
+
+                    <div class="agent-card">
+                        <span class="agent-emoji">💸</span>
+                        <h3>Sima Krvopija</h3>
+                        <p class="agent-role">FinOps & Cloud Cost Optimization</p>
+                        <p>Gasi sve što košta, pita 'ko će ovo da plati?'. Štedi svaki dolar.</p>
+                        <span class="agent-command">@sima</span>
+                    </div>
+
+                    <div class="agent-card">
+                        <span class="agent-emoji">✂️</span>
+                        <h3>Uške Satara</h3>
+                        <p class="agent-role">Code Refactoring & Deletion</p>
+                        <p>Seče sve što je višak, bez milosti prema legacy kodu. Delete je njegovo ime.</p>
+                        <span class="agent-command">@uske</span>
+                    </div>
+
+                    <div class="agent-card">
+                        <span class="agent-emoji">🔐</span>
+                        <h3>Joca Mutni</h3>
+                        <p class="agent-role">Encryption & Data Masking</p>
+                        <p>Šifruje, maskira i nikome ne veruje. Paranoja je njegov hobby.</p>
+                        <span class="agent-command">@joca</span>
+                    </div>
+
+                    <div class="agent-card">
+                        <span class="agent-emoji">⚡</span>
+                        <h3>Gile Zver</h3>
+                        <p class="agent-role">Heavy Processing & Big Data</p>
+                        <p>Melje podatke, traži više RAM-a i GPU snage. Nikad mu nije dosta.</p>
+                        <span class="agent-command">@gile</span>
+                    </div>
+
+                    <div class="agent-card">
+                        <span class="agent-emoji">🐍</span>
+                        <h3>Laki Zmija</h3>
+                        <p class="agent-role">Workarounds & Legacy Bridges</p>
+                        <p>Pronalazi prečice kad dokumentacija zakaže. Majstor improvizacije.</p>
+                        <span class="agent-command">@laki</span>
+                    </div>
+
+                    <div class="agent-card">
+                        <span class="agent-emoji">🏛️</span>
+                        <h3>Žika Kurta</h3>
+                        <p class="agent-role">Architecture Advisor & Critic</p>
+                        <p>Zna sve o AWS Well-Architected, ali te i ismeje. Teška kritika, dobri saveti.</p>
+                        <span class="agent-command">@zika</span>
+                    </div>
+
+                    <div class="agent-card">
+                        <span class="agent-emoji">👁️</span>
+                        <h3>Moma Špijun</h3>
+                        <p class="agent-role">Auditing & User Activity Tracking</p>
+                        <p>Sve vidi, sve beleži, sve zna. CloudTrail je njegova biblija.</p>
+                        <span class="agent-command">@moma</span>
+                    </div>
+                </div>
+            </section>
+
+            <section id="usage">
+                <h2>Usage Examples</h2>
+                
+                <div class="example-section">
+                    <h4>💸 FinOps with Sima Krvopija</h4>
+                    <pre><code>@sima koji EC2 instancei nisu korišćeni više od 7 dana?</code></pre>
+                    <p><em>"A ko će ovo da plati?! Imam ovde 14 m5.xlarge instanci koje samo troše pare..."</em></p>
+                </div>
+
+                <div class="example-section">
+                    <h4>🏛️ Architecture Review with Žika Kurta</h4>
+                    <pre><code>@zika pregledaj ovu microservices arhitekturu</code></pre>
+                    <p><em>"E moj ti... ko te to učio? Ovo nema veze sa Well-Architected Frameworkom. Slušaj sad..."</em></p>
+                </div>
+
+                <div class="example-section">
+                    <h4>🕵️ Security Audit with Mile Pacov</h4>
+                    <pre><code>@mile pazi, ima nešto sumnjivo u ovim IAM permisijama</code></pre>
+                    <p><em>"Njušim nešto... ovaj role ima AdministratorAccess bez ijednog condition bloka. Pazi vamo..."</em></p>
+                </div>
+
+                <div class="example-section">
+                    <h4>🌙 Debugging with Toza Vampir</h4>
+                    <pre><code>@toza analiziraj ovaj stack trace iz produkcije</code></pre>
+                    <p><em>"NullPointerException. Linija 247. Noćas u 3:17. Uvek noćas u 3:17."</em></p>
+                </div>
+            </section>
+
+            <section id="installation">
+                <h2>Installation</h2>
+                <h3>From VS Code Marketplace</h3>
+                <pre><code>ext install subzone.balkan-devops-agents</code></pre>
+                
+                <h3>Or via VS Code UI</h3>
+                <ol style="font-size: 1.1em; line-height: 2;">
+                    <li>Open VS Code</li>
+                    <li>Press <code>Cmd+Shift+X</code> (macOS) or <code>Ctrl+Shift+X</code> (Windows/Linux)</li>
+                    <li>Search for "Balkan DevOps Agents"</li>
+                    <li>Click Install</li>
+                    <li>Reload VS Code</li>
+                    <li>Open Copilot Chat and type <code>@steva</code> to test!</li>
+                </ol>
+
+                <h3>From VSIX (Manual)</h3>
+                <pre><code>code --install-extension balkan-devops-agents-1.0.0.vsix</code></pre>
+            </section>
+
+            <section id="requirements">
+                <h2>Requirements</h2>
+                <ul style="font-size: 1.1em; line-height: 2;">
+                    <li>VS Code version 1.116.0 or higher</li>
+                    <li>GitHub Copilot extension installed and active</li>
+                    <li>GitHub Copilot Chat enabled</li>
+                    <li>Active GitHub Copilot subscription</li>
+                </ul>
+            </section>
+
+            <section id="contributing">
+                <h2>Contributing</h2>
+                <p style="font-size: 1.1em; line-height: 1.8;">
+                    Contributions are welcome! Found a bug? Have an idea for a new agent? Want to improve the existing ones?
+                </p>
+                <ol style="font-size: 1.1em; line-height: 2;">
+                    <li>Fork the repository</li>
+                    <li>Create your feature branch: <code>git checkout -b feature/amazing-feature</code></li>
+                    <li>Commit your changes: <code>git commit -m 'Add some amazing feature'</code></li>
+                    <li>Push to the branch: <code>git push origin feature/amazing-feature</code></li>
+                    <li>Open a Pull Request</li>
+                </ol>
+            </section>
+
+            <section id="license">
+                <h2>License</h2>
+                <p style="font-size: 1.1em;">
+                    This project is licensed under the MIT License. See the LICENSE file for details.
+                </p>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p style="font-size: 1.2em; margin-bottom: 20px;">
+                Made with ❤️ for the Balkan DevOps Community
+            </p>
+            <p>
+                <a href="https://github.com/subzone/balkan-devops-agent">GitHub</a> | 
+                <a href="https://marketplace.visualstudio.com/items?itemName=subzone.balkan-devops-agents">VS Code Marketplace</a> | 
+                <a href="https://github.com/subzone/balkan-devops-agent/issues">Report Issues</a>
+            </p>
+            <p style="margin-top: 20px;">
+                © 2026 Balkan DevOps Agents
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
