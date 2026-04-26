@@ -282,8 +282,48 @@
                 </div>
             </section>
 
+            <section id="claudecode">
+                <h2>🤖 Claude Code Podrška</h2>
+                <p style="font-size: 1.3em; line-height: 1.8; font-weight: 500;">
+                    <strong>I CLAUDE CODE radi!</strong> Anthropic-ovi subagents — Steva, Sima, Mile i ekipa kao native Claude Code agenti.
+                </p>
+                <p style="font-size: 1.1em; line-height: 1.8; margin-top: 15px;">
+                    Markdown fajl sa YAML frontmatter-om u <code>~/.claude/agents/</code> ili <code>.claude/agents/</code>. Claude Code ih automatski rutira na osnovu opisa, ili pozoveš direktno.
+                </p>
+                <h3 style="margin-top: 25px;">Kako?</h3>
+                <pre><code>Cmd+Shift+P → Balkan DevOps: Instaliraj agente za Claude Code</code></pre>
+                <div class="features" style="margin-top: 20px;">
+                    <div class="feature">
+                        <div class="feature-icon">👤</div>
+                        <h3>User Level</h3>
+                        <p><code>~/.claude/agents/</code></p>
+                        <p>Pozivaj sa <code>@balkan-sima</code> u Claude Code. Radi u svim projektima.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">📁</div>
+                        <h3>Project Level</h3>
+                        <p><code>.claude/agents/</code></p>
+                        <p>Agenti se automatski učitavaju u ovom projektu. Deli se sa timom preko git-a.</p>
+                    </div>
+                </div>
+                <div class="example-section" style="margin-top: 25px;">
+                    <h4>Šta se generiše?</h4>
+                    <p><code>balkan-{agent}.md</code> sa YAML frontmatter-om (<code>name</code>, <code>description</code>) + system prompt + knowledge base. Tools polje prazno — agenti naslede sve toole iz parent sesije. ČIST MARKDOWN.</p>
+                </div>
+            </section>
+
             <section id="latest-updates">
                 <h2>Poslednje Izmene</h2>
+                <div class="changelog">
+                    <h4>📦 v0.0.8 - 26. april 2026.</h4>
+                    <ul>
+                        <li><strong>Claude Code podrška!</strong> Anthropic subagents — jedan klik, agenti se generišu kao <code>balkan-{ime}.md</code> sa YAML frontmatter-om</li>
+                        <li>User Level: <code>~/.claude/agents/</code> — pozivaj sa <code>@balkan-sima</code> u Claude Code</li>
+                        <li>Project Level: <code>.claude/agents/</code> — automatski u ovom projektu, deli se sa timom preko git-a</li>
+                        <li>3 nove komande u Command Palette za Claude Code</li>
+                        <li>Knowledge base automatski uključen u svaki subagent fajl</li>
+                    </ul>
+                </div>
                 <div class="changelog">
                     <h4>📦 v0.0.7 - 27. april 2026.</h4>
                     <ul>
@@ -340,8 +380,8 @@
                     </div>
                     <div class="feature">
                         <div class="feature-icon">💬</div>
-                        <h3>Copilot + Amazon Q</h3>
-                        <p>Radi sa oba — biraš šta ti odgovara</p>
+                        <h3>Copilot + Amazon Q + Claude Code</h3>
+                        <p>Radi sa sva tri — biraš šta ti odgovara</p>
                     </div>
                     <div class="feature">
                         <div class="feature-icon">🇷🇸</div>
@@ -454,10 +494,10 @@
                 <h2>Šta ti treba</h2>
                 <ul style="font-size: 1.1em; line-height: 2;">
                     <li><strong>VS Code 1.116+</strong></li>
-                    <li><strong>GitHub Copilot</strong> (za @agent pozive) <strong>ILI Amazon Q Developer</strong> (za saved prompts / rules)</li>
+                    <li><strong>GitHub Copilot</strong> (za @agent pozive) <strong>ILI Amazon Q Developer</strong> (za saved prompts / rules) <strong>ILI Claude Code</strong> (za subagents)</li>
                 </ul>
                 <p style="font-size: 1em; margin-top: 10px; color: #666;">
-                    Nemaš ni Copilot ni Amazon Q? Onda ovo ne radi. Jednostavno.
+                    Nemaš nijedan? Onda ovo ne radi. Jednostavno.
                 </p>
             </section>
 
