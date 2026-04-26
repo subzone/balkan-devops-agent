@@ -7,7 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.0.7] - 2026-04-27
+## [0.0.8] - 2026-04-26
+
+### Added
+- **Claude Code podrška** — I CLAUDE CODE radi! Anthropic-ovi subagents.
+  - Nova komanda: `Balkan DevOps: Instaliraj agente za Claude Code` — multi-AI platforme u istoj ekstenziji!
+  - **User Level** (`~/.claude/agents/`) — generiše subagents, pozivaj sa `@balkan-sima` u Claude Code
+  - **Project Level** (`.claude/agents/`) — workspace-specifični agenti, deli se preko git-a
+  - Markdown fajlovi sa YAML frontmatter (`name`, `description`) + system prompt + knowledge base
+  - Automatski routing na osnovu description polja — opiši problem, Claude rutira na pravog agenta
+  - Nema dependency-ja, čist markdown — tools nasleđuju iz parent sesije
+- Novi fajl: `src/claudecode-generator.ts` — kompletna logika za Claude Code generisanje
+- 3 nove komande u Command Palette:
+  - `Balkan DevOps: Instaliraj agente za Claude Code` (glavni entry point)
+  - `Balkan DevOps: Generiši Claude Code Subagents (User Level)`
+  - `Balkan DevOps: Generiši Claude Code Subagents (Project Level)`
+
+### Changed
+- Ažurirana dokumentacija sa Claude Code sekcijama — README, agent docs
+- Struktura projekta: dodao `claudecode-generator.ts` pored `amazonq-generator.ts`
+- Requirements sekcija: sada navodi GitHub Copilot **ILI** Amazon Q **ILI** Claude Code
+- README tabela sa opcijama za User/Project/Oba nivoa instalacije
+
+### Improved
+- Multi-platform AI podrška: GitHub Copilot + Amazon Q + Claude Code u jednoj ekstenziji
+- Svaki agent može da radi na 3 različite AI platforme sa konzistentnim ponašanjem
+
+## [0.0.7] - 2026-04-26
 
 ### Added
 - **Amazon Q / Kiro podrška** — KRŠ I LOM, nisi više vezan za Copilot!

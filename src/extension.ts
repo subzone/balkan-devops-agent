@@ -1,6 +1,11 @@
 import * as vscode from "vscode";
 import { AGENTS, AgentDefinition } from "./agents";
 import { installAmazonQ, installUserPrompts, installRepoRules } from "./amazonq-generator";
+import {
+  installClaudeCode,
+  installClaudeCodeUserAgents,
+  installClaudeCodeProjectAgents,
+} from "./claudecode-generator";
 
 const BASE_SYSTEM_SUFFIX = `
 Odgovaraš na srpskom jeziku. Daješ tehnički precizne odgovore u svom karakteru.
@@ -367,6 +372,19 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("balkan-devops.installAmazonQ", installAmazonQ),
     vscode.commands.registerCommand("balkan-devops.installUserPrompts", installUserPrompts),
     vscode.commands.registerCommand("balkan-devops.installRepoRules", installRepoRules)
+  );
+
+  // Claude Code integration commands
+  context.subscriptions.push(
+    vscode.commands.registerCommand("balkan-devops.installClaudeCode", installClaudeCode),
+    vscode.commands.registerCommand(
+      "balkan-devops.installClaudeCodeUserAgents",
+      installClaudeCodeUserAgents
+    ),
+    vscode.commands.registerCommand(
+      "balkan-devops.installClaudeCodeProjectAgents",
+      installClaudeCodeProjectAgents
+    )
   );
 }
 

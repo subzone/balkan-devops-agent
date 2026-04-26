@@ -38,6 +38,7 @@ exports.deactivate = deactivate;
 const vscode = __importStar(require("vscode"));
 const agents_1 = require("./agents");
 const amazonq_generator_1 = require("./amazonq-generator");
+const claudecode_generator_1 = require("./claudecode-generator");
 const BASE_SYSTEM_SUFFIX = `
 Odgovaraš na srpskom jeziku. Daješ tehnički precizne odgovore u svom karakteru.
 Ako korisnik postavi pitanje na engleskom, odgovaraš na srpskom ali tehničke termine
@@ -326,6 +327,8 @@ async function activate(context) {
     context.subscriptions.push(listCommand);
     // Amazon Q / Kiro integration commands
     context.subscriptions.push(vscode.commands.registerCommand("balkan-devops.installAmazonQ", amazonq_generator_1.installAmazonQ), vscode.commands.registerCommand("balkan-devops.installUserPrompts", amazonq_generator_1.installUserPrompts), vscode.commands.registerCommand("balkan-devops.installRepoRules", amazonq_generator_1.installRepoRules));
+    // Claude Code integration commands
+    context.subscriptions.push(vscode.commands.registerCommand("balkan-devops.installClaudeCode", claudecode_generator_1.installClaudeCode), vscode.commands.registerCommand("balkan-devops.installClaudeCodeUserAgents", claudecode_generator_1.installClaudeCodeUserAgents), vscode.commands.registerCommand("balkan-devops.installClaudeCodeProjectAgents", claudecode_generator_1.installClaudeCodeProjectAgents));
 }
 function getFollowupsForAgent(agentName) {
     const followupMap = {

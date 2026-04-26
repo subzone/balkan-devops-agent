@@ -132,6 +132,36 @@ Svaki fajl sadrži:
 
 ---
 
+## 🤖 Claude Code Podrška
+
+**I CLAUDE CODE radi!** Anthropic-ovi subagents — Steva, Sima, Mile i ekipa kao native Claude Code agenti.
+
+Otvori Command Palette (`Cmd+Shift+P`) i kucaj:
+
+```
+Balkan DevOps: Instaliraj agente za Claude Code
+```
+
+Biraš gde:
+
+| Opcija | Gde se instalira | Kako se koristi | Za koga |
+|--------|-----------------|-----------------|---------|
+| **👤 User Level** | `~/.claude/agents/` | `@balkan-sima` u Claude Code | Tvoji agenti, svi projekti |
+| **📁 Project Level** | `.claude/agents/` | Automatski u ovom projektu | Ceo tim, deli se preko git-a |
+| **🔄 Oba** | I jedno i drugo | Sve od gore | Kad hoćeš SVE |
+
+### Kako se poziva u Claude Code?
+
+Kucaš `@balkan-sima`, `@balkan-mile`, `@balkan-steva`... ILI samo opišeš problem i Claude Code automatski rutira na osnovu `description` polja u frontmatter-u.
+
+### Šta se generiše?
+
+`balkan-{agent}.md` fajlovi sa YAML frontmatter-om (`name`, `description`) + system prompt + knowledge base. Tools polje ostaje prazno — agenti naslede sve toole iz parent sesije.
+
+**Čist markdown. Bez dependency-ja. KRŠ I LOM!**
+
+---
+
 ## ⏫ Ažuriranja
 
 **Automatski se ažurira.** VS Code se brine o tome.
@@ -166,10 +196,11 @@ MIT licenca kaže: **NO WARRANTY**. Razumeš? Dobro.
 
 ```
 src/
-  ├── extension.ts          # Entry point
-  ├── agents.ts             # 10 agenata ovde
-  └── amazonq-generator.ts  # Amazon Q / Kiro generator
-package.json                # Manifest
+  ├── extension.ts             # Entry point
+  ├── agents.ts                # 10 agenata ovde
+  ├── amazonq-generator.ts     # Amazon Q / Kiro generator
+  └── claudecode-generator.ts  # Claude Code generator
+package.json                   # Manifest
 ```
 
 **Dodaj novog agenta:**
@@ -186,10 +217,10 @@ Znaš već.
 ## 📋 Šta ti treba
 
 - VS Code (noviji od 1.90)
-- GitHub Copilot (MORA biti aktivna pretplata) **ILI** Amazon Q Developer
+- GitHub Copilot (MORA biti aktivna pretplata) **ILI** Amazon Q Developer **ILI** Claude Code
 - Node.js 20+ (za dev)
 
-Nemaš ni Copilot ni Amazon Q? Onda ovo ne radi. Jednostavno.
+Nemaš nijedan? Onda ovo ne radi. Jednostavno.
 
 ---
 

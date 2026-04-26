@@ -2,7 +2,7 @@
   "name": "balkan-devops-agents",
   "displayName": "Balkan DevOps Agents",
   "description": "10 AI agenata koji pričaju srpski i kažu ti ISTINU bez uvijanja. FinOps? Security? Debugging u 3 ujutru? Cleanup? Oni znaju. Dosta više corporate bullshit-a.",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "license": "MIT",
   "engines": {
     "vscode": "^1.116.0"
@@ -199,6 +199,21 @@
       {
         "command": "balkan-devops.installRepoRules",
         "title": "Balkan DevOps: Generiši Amazon Q Workspace Rules (Repo Level)",
+        "category": "Balkan DevOps"
+      },
+      {
+        "command": "balkan-devops.installClaudeCode",
+        "title": "Balkan DevOps: Instaliraj agente za Claude Code",
+        "category": "Balkan DevOps"
+      },
+      {
+        "command": "balkan-devops.installClaudeCodeUserAgents",
+        "title": "Balkan DevOps: Generiši Claude Code Subagents (User Level)",
+        "category": "Balkan DevOps"
+      },
+      {
+        "command": "balkan-devops.installClaudeCodeProjectAgents",
+        "title": "Balkan DevOps: Generiši Claude Code Subagents (Project Level)",
         "category": "Balkan DevOps"
       }
     ]
