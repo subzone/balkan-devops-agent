@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="10 AI agenata za Copilot, Amazon Q, Claude Code, Antigravity i Codex sa autentičnim balkanskim karakterima za svaku DevOps disciplinu">
+    <meta name="description" content="10 AI agenata za Copilot, Amazon Q, Claude Code, Antigravity, Codex i Cursor (Project Rules / AGENTS.md) sa autentičnim balkanskim karakterima za svaku DevOps disciplinu">
     <title>Balkan DevOps Agents - VS Code Ekstenzija</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -226,7 +226,7 @@
             <h1>🇷🇸 Balkan DevOps Agents</h1>
             <p><strong>KRŠ I LOM!</strong> Dosta više ljubaznih AI asistenata!</p>
             <p>10 agenata koji ti kažu ISTINU - direktno, brutalno, bez corporate floskula</p>
-            <div class="version-badge" id="version-info">📦 Verzija: v0.0.9</div>
+            <div class="version-badge" id="version-info">📦 Verzija: v0.0.10</div>
             <br><br>
             <a href="https://marketplace.visualstudio.com/items?itemName=subzone.balkan-devops-agents" class="install-btn">Instaliraj sa Marketplace-a</a>
             <br><br>
@@ -370,8 +370,58 @@
                 </div>
             </section>
 
+            <section id="cursor">
+                <h2>🖱️ Cursor Podrška</h2>
+                <p style="font-size: 1.3em; line-height: 1.8; font-weight: 500;">
+                    <strong>I CURSOR radi!</strong> Generiši Project Rules kao <code>.mdc</code> fajlove i opcioni <code>AGENTS.md</code> za repo ili user nivo.
+                </p>
+                <p style="font-size: 1.1em; line-height: 1.8; margin-top: 15px;">
+                    Svaki agent dobija <code>balkan-{ime}.mdc</code> sa <code>description</code> i <code>alwaysApply: false</code> — uključi rule kad ti treba ta persona (da se deset likova ne meša u svakom chatu).
+                </p>
+                <h3 style="margin-top: 25px;">Kako?</h3>
+                <pre><code>Cmd+Shift+P → Balkan DevOps: Instaliraj agente za Cursor</code></pre>
+                <div class="features" style="margin-top: 20px;">
+                    <div class="feature">
+                        <div class="feature-icon">👤</div>
+                        <h3>User Rules (.mdc)</h3>
+                        <p><code>~/.cursor/rules/</code></p>
+                        <p>Globalne rule na mašini za sve projekte.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">📁</div>
+                        <h3>Project Rules (.mdc)</h3>
+                        <p><code>.cursor/rules/</code></p>
+                        <p>Deliš sa timom preko git-a.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🌍</div>
+                        <h3>User AGENTS.md</h3>
+                        <p><code>~/.cursor/AGENTS.md</code></p>
+                        <p>Sažetak agenata i rutiranja.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🧭</div>
+                        <h3>Project AGENTS.md</h3>
+                        <p><code>./AGENTS.md</code></p>
+                        <p>Repo-level kontekst za Cursor agenta.</p>
+                    </div>
+                </div>
+                <div class="example-section" style="margin-top: 25px;">
+                    <h4>Šta se generiše?</h4>
+                    <p><code>balkan-{agent}.mdc</code> — persona, system prompt, knowledge base, rutiranje. Plus opciono <code>AGENTS.md</code> sa pregledom svih izabranih agenata.</p>
+                </div>
+            </section>
+
             <section id="latest-updates">
                 <h2>Poslednje Izmene</h2>
+                <div class="changelog">
+                    <h4>📦 v0.0.10 - 27. april 2026.</h4>
+                    <ul>
+                        <li><strong>Cursor podrška!</strong> Generisanje <code>.cursor/rules/*.mdc</code> i <code>AGENTS.md</code> (user ili project level).</li>
+                        <li>Nova komanda: <code>Balkan DevOps: Instaliraj agente za Cursor</code></li>
+                        <li>Komande za User/Project Rules i User/Project <code>AGENTS.md</code></li>
+                    </ul>
+                </div>
                 <div class="changelog">
                     <h4>📦 v0.0.9 - 26. april 2026.</h4>
                     <ul>
@@ -448,7 +498,7 @@
                     </div>
                     <div class="feature">
                         <div class="feature-icon">💬</div>
-                        <h3>Copilot, Q, Claude, Gemini, Codex</h3>
+                        <h3>Copilot, Q, Claude, Gemini, Codex, Cursor</h3>
                         <p>Radi sa svima — biraš šta ti odgovara</p>
                     </div>
                     <div class="feature">
@@ -562,7 +612,7 @@
                 <h2>Šta ti treba</h2>
                 <ul style="font-size: 1.1em; line-height: 2;">
                     <li><strong>VS Code 1.116+</strong></li>
-                    <li><strong>GitHub Copilot</strong> <strong>ILI Amazon Q Developer</strong> <strong>ILI Claude Code</strong> <strong>ILI Antigravity (Gemini)</strong> <strong>ILI Codex</strong></li>
+                    <li><strong>GitHub Copilot</strong> <strong>ILI Amazon Q Developer</strong> <strong>ILI Claude Code</strong> <strong>ILI Antigravity (Gemini)</strong> <strong>ILI Codex</strong> <strong>ILI Cursor</strong> (rules / chat — ekstenzija je VS Code-kompatibilna)</li>
                 </ul>
                 <p style="font-size: 1em; margin-top: 10px; color: #666;">
                     Nemaš nijedan? Onda ovo ne radi. Jednostavno.

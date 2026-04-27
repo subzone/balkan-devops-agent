@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.11] - 2026-04-27
+
+### Added
+- **Cursor podrška** — generisanje `.cursor/rules/balkan-{ime}.mdc` Project Rules i opcionog `AGENTS.md` (user ili project level).
+  - Nova komanda: `Balkan DevOps: Instaliraj agente za Cursor`
+  - Komande: `Generiši Cursor Rules (.mdc, User/Project Level)`, `Generiši Cursor AGENTS.md (User/Project Level)`
+  - Novi fajl: `src/cursor-generator.ts`
+
+### Changed
+- README, GitHub Pages (`docs/index.html`), `docs/agents/README.md`, marketplace `description` u `package.json` — dokumentacija za Cursor.
+
 ## [0.0.9] - 2026-04-26
 
 ### Added

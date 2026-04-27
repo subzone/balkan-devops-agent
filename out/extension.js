@@ -41,6 +41,7 @@ const amazonq_generator_1 = require("./amazonq-generator");
 const claudecode_generator_1 = require("./claudecode-generator");
 const antigravity_generator_1 = require("./antigravity-generator");
 const codex_generator_1 = require("./codex-generator");
+const cursor_generator_1 = require("./cursor-generator");
 const BASE_SYSTEM_SUFFIX = `
 Odgovaraš na srpskom jeziku. Daješ tehnički precizne odgovore u svom karakteru.
 Ako korisnik postavi pitanje na engleskom, odgovaraš na srpskom ali tehničke termine
@@ -335,6 +336,8 @@ async function activate(context) {
     context.subscriptions.push(vscode.commands.registerCommand("balkan-devops.installAntigravity", antigravity_generator_1.installAntigravityAgents));
     // Codex integration commands
     context.subscriptions.push(vscode.commands.registerCommand("balkan-devops.installCodex", codex_generator_1.installCodex), vscode.commands.registerCommand("balkan-devops.installCodexUserAgents", codex_generator_1.installCodexUserAgents), vscode.commands.registerCommand("balkan-devops.installCodexUserAgentsMd", codex_generator_1.installCodexUserAgentsMd), vscode.commands.registerCommand("balkan-devops.installCodexProjectAgents", codex_generator_1.installCodexProjectAgents), vscode.commands.registerCommand("balkan-devops.installCodexProjectAgentsMd", codex_generator_1.installCodexProjectAgentsMd));
+    // Cursor integration commands
+    context.subscriptions.push(vscode.commands.registerCommand("balkan-devops.installCursor", cursor_generator_1.installCursor), vscode.commands.registerCommand("balkan-devops.installCursorUserRules", cursor_generator_1.installCursorUserRules), vscode.commands.registerCommand("balkan-devops.installCursorProjectRules", cursor_generator_1.installCursorProjectRules), vscode.commands.registerCommand("balkan-devops.installCursorUserAgentsMd", cursor_generator_1.installCursorUserAgentsMd), vscode.commands.registerCommand("balkan-devops.installCursorProjectAgentsMd", cursor_generator_1.installCursorProjectAgentsMd));
 }
 function getFollowupsForAgent(agentName) {
     const followupMap = {

@@ -1,8 +1,8 @@
 {
   "name": "balkan-devops-agents",
   "displayName": "Balkan DevOps Agents",
-  "description": "10 AI agenata koji pričaju srpski i kažu ti ISTINU bez uvijanja. FinOps? Security? Debugging u 3 ujutru? Cleanup? Oni znaju. Dosta više corporate bullshit-a.",
-  "version": "0.0.10",
+  "description": "10 AI agenata koji pričaju srpski i kažu ti ISTINU bez uvijanja. Copilot Chat, Amazon Q, Claude Code, Antigravity, Codex — i eksport za Cursor (.cursor/rules, AGENTS.md). FinOps? Security? Debugging u 3 ujutru? Oni znaju.",
+  "version": "0.0.11",
   "license": "MIT",
   "engines": {
     "vscode": "^1.116.0"
@@ -20,7 +20,8 @@
     "finops",
     "security",
     "aws",
-    "agents"
+    "agents",
+    "cursor"
   ],
   "repository": {
     "type": "git",
@@ -244,6 +245,31 @@
       {
         "command": "balkan-devops.installCodexProjectAgentsMd",
         "title": "Balkan DevOps: Generiši Codex AGENTS.md (Project Level)",
+        "category": "Balkan DevOps"
+      },
+      {
+        "command": "balkan-devops.installCursor",
+        "title": "Balkan DevOps: Instaliraj agente za Cursor",
+        "category": "Balkan DevOps"
+      },
+      {
+        "command": "balkan-devops.installCursorUserRules",
+        "title": "Balkan DevOps: Generiši Cursor Rules (.mdc, User Level)",
+        "category": "Balkan DevOps"
+      },
+      {
+        "command": "balkan-devops.installCursorProjectRules",
+        "title": "Balkan DevOps: Generiši Cursor Rules (.mdc, Project Level)",
+        "category": "Balkan DevOps"
+      },
+      {
+        "command": "balkan-devops.installCursorUserAgentsMd",
+        "title": "Balkan DevOps: Generiši Cursor AGENTS.md (User Level)",
+        "category": "Balkan DevOps"
+      },
+      {
+        "command": "balkan-devops.installCursorProjectAgentsMd",
+        "title": "Balkan DevOps: Generiši Cursor AGENTS.md (Project Level)",
         "category": "Balkan DevOps"
       }
     ]

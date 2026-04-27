@@ -302,6 +302,26 @@ Custom agente koristiš tako što tražiš da Codex spawn-uje `balkan_sima`, `ba
 
 ---
 
+## 🖱️ Cursor Korišćenje
+
+Agenti se mogu eksportovati i u **Cursor** kao Project Rules (`*.mdc`) i opcioni **AGENTS.md**.
+
+Otvori Command Palette (`Cmd+Shift+P`) → `Balkan DevOps: Instaliraj agente za Cursor`
+
+```
+# Project Rules (uključi rule kad ti treba ta persona — alwaysApply je false):
+~/.cursor/rules/balkan-sima.mdc
+.cursor/rules/balkan-mile.mdc
+
+# AGENTS.md (pregled svih agenata i rutiranje):
+~/.cursor/AGENTS.md
+./AGENTS.md
+```
+
+Komande za pojedinačne ciljeve: **Generiši Cursor Rules (.mdc, User/Project Level)** i **Generiši Cursor AGENTS.md (User/Project Level)**.
+
+---
+
 ## 💡 Kako koristiti agente
 
 ### Copilot Chat (direktno)

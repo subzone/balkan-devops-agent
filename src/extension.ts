@@ -14,6 +14,13 @@ import {
   installCodexUserAgents,
   installCodexUserAgentsMd,
 } from "./codex-generator";
+import {
+  installCursor,
+  installCursorProjectAgentsMd,
+  installCursorProjectRules,
+  installCursorUserAgentsMd,
+  installCursorUserRules,
+} from "./cursor-generator";
 
 const BASE_SYSTEM_SUFFIX = `
 Odgovaraš na srpskom jeziku. Daješ tehnički precizne odgovore u svom karakteru.
@@ -421,6 +428,27 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       "balkan-devops.installCodexProjectAgentsMd",
       installCodexProjectAgentsMd
+    )
+  );
+
+  // Cursor integration commands
+  context.subscriptions.push(
+    vscode.commands.registerCommand("balkan-devops.installCursor", installCursor),
+    vscode.commands.registerCommand(
+      "balkan-devops.installCursorUserRules",
+      installCursorUserRules
+    ),
+    vscode.commands.registerCommand(
+      "balkan-devops.installCursorProjectRules",
+      installCursorProjectRules
+    ),
+    vscode.commands.registerCommand(
+      "balkan-devops.installCursorUserAgentsMd",
+      installCursorUserAgentsMd
+    ),
+    vscode.commands.registerCommand(
+      "balkan-devops.installCursorProjectAgentsMd",
+      installCursorProjectAgentsMd
     )
   );
 }

@@ -219,6 +219,34 @@ Codex custom agente koristiš tako što mu eksplicitno kažeš da spawn-uje odre
 
 ---
 
+## 🖱️ Cursor Podrška
+
+Radi i sa **Cursor** preko Project Rules (`.mdc`) i opcionog **AGENTS.md**.
+
+Otvori Command Palette (`Cmd+Shift+P`) i kucaj:
+
+```
+Balkan DevOps: Instaliraj agente za Cursor
+```
+
+Biraš gde:
+
+| Opcija | Gde se instalira | Za koga |
+|--------|------------------|---------|
+| **👤 User Level — Project Rules (.mdc)** | `~/.cursor/rules/` | Tvoje rule na ovoj mašini, svi projekti |
+| **📁 Project Level — Project Rules (.mdc)** | `.cursor/rules/` | Tim deli preko git-a |
+| **🌍 User Level — AGENTS.md** | `~/.cursor/AGENTS.md` | Sažetak agenata i rutiranja |
+| **🧭 Project Level — AGENTS.md** | `AGENTS.md` u root-u projekta | Repo-level kontekst za Cursor agenta |
+| **🔄 Oba** | Sve varijante | Redom generiše sve četiri |
+
+### Šta se generiše?
+
+Za svakog agenta **`balkan-{ime}.mdc`** sa YAML frontmatter-om (`description`, `alwaysApply: false`) — persona, system prompt, knowledge base i rutiranje ka drugim agentima. `alwaysApply` je namerno **isključen** da se deset persona ne meša u svakom chatu; uključi odgovarajuću rule u Cursor-u kad treba taj lik.
+
+**AGENTS.md** sadrži pregled svih izabranih agenata i rutiranje (koristan kao širi dokument u repou).
+
+---
+
 ## ⏫ Ažuriranja
 
 **Automatski se ažurira.** VS Code se brine o tome.
@@ -258,7 +286,8 @@ src/
   ├── amazonq-generator.ts     # Amazon Q / Kiro generator
   ├── claudecode-generator.ts  # Claude Code generator
   ├── antigravity-generator.ts # Antigravity (Gemini) generator
-  └── codex-generator.ts       # Codex custom agents generator
+  ├── codex-generator.ts       # Codex custom agents generator
+  └── cursor-generator.ts      # Cursor .mdc rules + AGENTS.md generator
 package.json                   # Manifest
 ```
 
@@ -276,7 +305,7 @@ Znaš već.
 ## 📋 Šta ti treba
 
 - VS Code (noviji od 1.90)
-- GitHub Copilot **ILI** Amazon Q Developer **ILI** Claude Code **ILI** Antigravity (Gemini Code Assist) **ILI** Codex
+- GitHub Copilot **ILI** Amazon Q Developer **ILI** Claude Code **ILI** Antigravity (Gemini Code Assist) **ILI** Codex **ILI** Cursor (rules / AGENTS.md)
 - Node.js 20+ (za dev)
 
 Nemaš nijedan? Onda ovo ne radi. Jednostavno.
