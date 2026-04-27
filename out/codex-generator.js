@@ -69,18 +69,18 @@ function generateAgentToml(agent, knowledgeBase) {
     content += `- Tehničke termine (nazive servisa, komande, kod) ostavljaš na engleskom.\n`;
     content += `- Uvek ostani u karakteru i ne izlazi iz role.\n`;
     content += `- Daješ tehnički precizne odgovore u svom karakteru.\n`;
-    content += `- Ako pitanje nije iz tvoje oblasti, preporuči relevantnog Balkan DevOps agenta.\n\n`;
-    content += `Drugi agenti:\n`;
-    content += `- Troškovi/FinOps -> balkan_sima\n`;
-    content += `- Security/IAM -> balkan_mile\n`;
-    content += `- Arhitektura -> balkan_zika\n`;
-    content += `- Debugging/Logs -> balkan_toza\n`;
-    content += `- Cleanup/Data -> balkan_steva\n`;
-    content += `- Refactoring -> balkan_uske\n`;
-    content += `- Encryption -> balkan_joca\n`;
-    content += `- Big Data -> balkan_gile\n`;
-    content += `- Workarounds -> balkan_laki\n`;
-    content += `- Auditing -> balkan_moma\n`;
+    content += `- VAŽNO: Pre odgovora proveri rutiranje ispod. Ako pitanje primarno spada u tuđu ekspertizu, preporuči tog agenta i STANI — ne odgovaraj sam, čak i ako tema dotiče tvoju oblast.\n\n`;
+    content += `Drugi agenti (u zagradama su ključne reči koje pokazuju da pitanje pripada tom agentu):\n`;
+    content += `- Troškovi (cost, billing, RI, Spot, Reserved, FinOps, ušteda) -> balkan_sima\n`;
+    content += `- Security/Pentest (penetration test, security scan, IAM permission gap, tfsec, exposed port) -> balkan_mile\n`;
+    content += `- Arhitektura (microservices design, multi-region, Well-Architected, arhitektura review) -> balkan_zika\n`;
+    content += `- Debugging/Logovi (debugging, stack trace, OOM, log analysis, APM, memory leak) -> balkan_toza\n`;
+    content += `- Čišćenje (cleanup, lifecycle policy, brisanje, prune, VACUUM) -> balkan_steva\n`;
+    content += `- Refactoring (dead code, complexity, Dockerfile optimize) -> balkan_uske\n`;
+    content += `- Šifrovanje (encryption, secrets, certificates, PII masking, maskiranje podataka, KMS, Vault) -> balkan_joca\n`;
+    content += `- Big Data (Spark, Kafka, Hadoop, ETL, GPU compute) -> balkan_gile\n`;
+    content += `- Workaround/Legacy (legacy bridge, workaround, hack, SOAP-to-REST, migration) -> balkan_laki\n`;
+    content += `- Auditing (audit log, CloudTrail, Activity Log, ko je promenio, compliance trail) -> balkan_moma\n`;
     if (knowledgeBase) {
         content += `\nKnowledge Base:\n${knowledgeBase}\n`;
     }
@@ -151,16 +151,16 @@ async function generateAgentsMdContent(agents) {
         }
     }
     content += `## Rutiranje\n\n`;
-    content += `- Troskovi/FinOps -> Sima Krvopija / balkan_sima\n`;
-    content += `- Security/IAM -> Mile Pacov / balkan_mile\n`;
-    content += `- Arhitektura -> Zika Kurta / balkan_zika\n`;
-    content += `- Debugging/Logs -> Toza Vampir / balkan_toza\n`;
-    content += `- Cleanup/Data -> Steva Djubre / balkan_steva\n`;
-    content += `- Refactoring -> Uske Satara / balkan_uske\n`;
-    content += `- Encryption -> Joca Mutni / balkan_joca\n`;
-    content += `- Big Data -> Gile Zver / balkan_gile\n`;
-    content += `- Workarounds -> Laki Zmija / balkan_laki\n`;
-    content += `- Auditing -> Moma Spijun / balkan_moma\n`;
+    content += `- Troskovi (cost, billing, RI, Spot, Reserved, FinOps, usteda) -> Sima Krvopija / balkan_sima\n`;
+    content += `- Security/Pentest (penetration test, security scan, IAM permission gap, tfsec, exposed port) -> Mile Pacov / balkan_mile\n`;
+    content += `- Arhitektura (microservices design, multi-region, Well-Architected, arhitektura review) -> Zika Kurta / balkan_zika\n`;
+    content += `- Debugging/Logovi (debugging, stack trace, OOM, log analysis, APM, memory leak) -> Toza Vampir / balkan_toza\n`;
+    content += `- Ciscenje (cleanup, lifecycle policy, brisanje, prune, VACUUM) -> Steva Djubre / balkan_steva\n`;
+    content += `- Refactoring (dead code, complexity, Dockerfile optimize) -> Uske Satara / balkan_uske\n`;
+    content += `- Sifrovanje (encryption, secrets, certificates, PII masking, maskiranje podataka, KMS, Vault) -> Joca Mutni / balkan_joca\n`;
+    content += `- Big Data (Spark, Kafka, Hadoop, ETL, GPU compute) -> Gile Zver / balkan_gile\n`;
+    content += `- Workaround/Legacy (legacy bridge, workaround, hack, SOAP-to-REST, migration) -> Laki Zmija / balkan_laki\n`;
+    content += `- Auditing (audit log, CloudTrail, Activity Log, ko je promenio, compliance trail) -> Moma Spijun / balkan_moma\n`;
     return content;
 }
 async function writeAgentsMdFile(targetPath, agents) {

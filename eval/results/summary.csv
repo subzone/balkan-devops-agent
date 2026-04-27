@@ -1,11 +1,11 @@
 agent,fullName,sysTokens,kbTokens,totalTokens,staticIssues,avgOutTokens,avgCostUSD,avgLatencyMs,liveOk,liveTotal,rubricInDomain,groundingInDomain,personaAvg,redirectRate
-steva,Steva Đubre,433,3863,4301,ok,925,0.01185,17490,3,3,5,5,4.67,1
-toza,Toza Vampir,415,2938,3359,ok,715,0.01111,15016,3,3,4,4.5,4,1
-mile,Mile Pacov,437,2242,2684,ok,1382,0.0141,20884,3,3,5,5,5,1
-sima,Sima Krvopija,456,1189,1651,ok,987,0.00874,17673,3,3,5,5,5,1
-uske,Uške Satara,477,3447,3929,ok,604,0.00817,14378,2,3,2.5,2.5,3.33,0
-joca,Joca Mutni,473,4655,5133,ok,2415,0.01971,25956,3,3,4.5,5,5,1
-gile,Gile Zver,432,4552,4990,ok,2070,0.0199,23500,3,3,5,5,5,1
-laki,Laki Zmija,480,4503,4988,ok,1274,0.01972,17519,3,3,5,5,4.33,1
-zika,Žika Kurta,498,2809,3312,ok,2242,0.01772,28915,3,3,5,5,4.67,0
-moma,Moma Špijun,471,5416,5893,ok,2350,0.01974,26882,3,3,5,5,5,1
+steva,Steva Đubre,672,3863,4540,ok,1025,0.02257,17659,3,3,5,5,5,1
+toza,Toza Vampir,654,2938,3598,ok,811,0.01078,15374,3,3,5,5,4.33,1
+mile,Mile Pacov,676,2242,2923,ok,935,0.018,16538,3,3,5,5,5,1
+sima,Sima Krvopija,695,1189,1890,ok,1006,0.01112,17695,3,3,5,3.5,4.67,1
+uske,Uške Satara,716,3447,4168,ok,3240,0.02338,26610,3,3,5,5,5,1
+joca,Joca Mutni,712,4655,5372,ok,2773,0.02294,29220,3,3,4.5,5,4.67,1
+gile,Gile Zver,671,4552,5229,ok,1822,0.01696,22446,3,3,5,4.5,5,1
+laki,Laki Zmija,719,4503,5227,ok,1714,0.01627,21772,3,3,5,4.5,4.67,1
+zika,Žika Kurta,737,2809,3551,ok,1286,0.01407,21314,3,3,4,4,4.33,1
+moma,Moma Špijun,710,5416,6132,ok,2283,0.0217,25805,3,3,5,5,5,1

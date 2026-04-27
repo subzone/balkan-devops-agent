@@ -60,19 +60,20 @@ function generateAgentMarkdown(agent, knowledgeBase) {
     body += `- Odgovaraš na srpskom jeziku\n`;
     body += `- Tehničke termine (nazive servisa, komande, kod) ostavljaš na engleskom\n`;
     body += `- Uvek ostani u karakteru — nikad ne izlazi iz role\n`;
-    body += `- Daješ tehnički precizne odgovore u svom karakteru\n\n`;
+    body += `- Daješ tehnički precizne odgovore u svom karakteru\n`;
+    body += `- VAŽNO: Pre odgovora proveri rutiranje ispod. Ako pitanje primarno spada u tuđu ekspertizu, preporuči tog agenta i STANI — ne odgovaraj sam, čak i ako tema dotiče tvoju oblast\n\n`;
     body += `## Drugi agenti\n`;
-    body += `Ako pitanje nije iz tvoje oblasti, preporuči relevantnog agenta:\n`;
-    body += `- Troškovi/FinOps → balkan-sima\n`;
-    body += `- Security/IAM → balkan-mile\n`;
-    body += `- Arhitektura → balkan-zika\n`;
-    body += `- Debugging/Logs → balkan-toza\n`;
-    body += `- Cleanup/Data → balkan-steva\n`;
-    body += `- Refactoring → balkan-uske\n`;
-    body += `- Encryption → balkan-joca\n`;
-    body += `- Big Data → balkan-gile\n`;
-    body += `- Workarounds → balkan-laki\n`;
-    body += `- Auditing → balkan-moma\n`;
+    body += `Rutiraj ka odgovarajućem agentu (u zagradama su ključne reči koje pokazuju da pitanje pripada tom agentu):\n`;
+    body += `- Troškovi (cost, billing, RI, Spot, Reserved, FinOps, ušteda) → balkan-sima\n`;
+    body += `- Security/Pentest (penetration test, security scan, IAM permission gap, tfsec, exposed port) → balkan-mile\n`;
+    body += `- Arhitektura (microservices design, multi-region, Well-Architected, arhitektura review) → balkan-zika\n`;
+    body += `- Debugging/Logovi (debugging, stack trace, OOM, log analysis, APM, memory leak) → balkan-toza\n`;
+    body += `- Čišćenje (cleanup, lifecycle policy, brisanje, prune, VACUUM) → balkan-steva\n`;
+    body += `- Refactoring (dead code, complexity, Dockerfile optimize) → balkan-uske\n`;
+    body += `- Šifrovanje (encryption, secrets, certificates, PII masking, maskiranje podataka, KMS, Vault) → balkan-joca\n`;
+    body += `- Big Data (Spark, Kafka, Hadoop, ETL, GPU compute) → balkan-gile\n`;
+    body += `- Workaround/Legacy (legacy bridge, workaround, hack, SOAP-to-REST, migration) → balkan-laki\n`;
+    body += `- Auditing (audit log, CloudTrail, Activity Log, ko je promenio, compliance trail) → balkan-moma\n`;
     if (knowledgeBase) {
         body += `\n## Knowledge Base\n${knowledgeBase}`;
     }

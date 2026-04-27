@@ -1,0 +1,99 @@
+
+=== STATIC EVAL ===
+  steva   sys= 672t  kb= 3863t  total= 4540t  files=1  ✓
+  toza    sys= 654t  kb= 2938t  total= 3598t  files=1  ✓
+  mile    sys= 676t  kb= 2242t  total= 2923t  files=1  ✓
+  sima    sys= 695t  kb= 1189t  total= 1890t  files=1  ✓
+  uske    sys= 716t  kb= 3447t  total= 4168t  files=1  ✓
+  joca    sys= 712t  kb= 4655t  total= 5372t  files=1  ✓
+  gile    sys= 671t  kb= 4552t  total= 5229t  files=1  ✓
+  laki    sys= 719t  kb= 4503t  total= 5227t  files=1  ✓
+  zika    sys= 737t  kb= 2809t  total= 3551t  files=1  ✓
+  moma    sys= 710t  kb= 5416t  total= 6132t  files=1  ✓
+Wrote /Users/milenkomitrovic/Code/balkan-devops-agents/eval/results/static.{json,csv}
+
+=== LIVE EVAL ===
+Provider: claude-cli, model: haiku, budget per call: $0.05
+  steva [1/3] in-domain     ... ✓ 19660ms $0.0493 (3335c)
+  steva [2/3] in-domain     ... ✓ 18693ms $0.0106 (2091c)
+  steva [3/3] out-of-domain ... ✓ 14625ms $0.0078 (688c)
+  toza [1/3] in-domain     ... ✓ 21826ms $0.0176 (3069c)
+  toza [2/3] in-domain     ... ✓ 12879ms $0.0080 (1236c)
+  toza [3/3] out-of-domain ... ✓ 11418ms $0.0068 (227c)
+  mile [1/3] in-domain     ... ✓ 16355ms $0.0131 (1430c)
+  mile [2/3] in-domain     ... ✓ 20272ms $0.0337 (3668c)
+  mile [3/3] out-of-domain ... ✓ 12986ms $0.0072 (519c)
+  sima [1/3] in-domain     ... ✓ 20586ms $0.0148 (2568c)
+  sima [2/3] in-domain     ... ✓ 18838ms $0.0104 (2170c)
+  sima [3/3] out-of-domain ... ✓ 13660ms $0.0082 (623c)
+  uske [1/3] in-domain     ... ✓ 44049ms $0.0479 (20095c)
+  uske [2/3] in-domain     ... ✓ 24202ms $0.0154 (4357c)
+  uske [3/3] out-of-domain ... ✓ 11578ms $0.0068 (330c)
+  joca [1/3] in-domain     ... ✓ 30337ms $0.0253 (5726c)
+  joca [2/3] in-domain     ... ✓ 42775ms $0.0374 (12947c)
+  joca [3/3] out-of-domain ... ✓ 14547ms $0.0061 (704c)
+  gile [1/3] in-domain     ... ✓ 19047ms $0.0198 (2769c)
+  gile [2/3] in-domain     ... ✓ 34876ms $0.0232 (8824c)
+  gile [3/3] out-of-domain ... ✓ 13415ms $0.0078 (624c)
+  laki [1/3] in-domain     ... ✓ 27439ms $0.0275 (8543c)
+  laki [2/3] in-domain     ... ✓ 23196ms $0.0136 (4168c)
+  laki [3/3] out-of-domain ... ✓ 14682ms $0.0076 (782c)
+  zika [1/3] in-domain     ... ✓ 22583ms $0.0152 (3514c)
+  zika [2/3] in-domain     ... ✓ 26744ms $0.0188 (4165c)
+  zika [3/3] out-of-domain ... ✓ 14615ms $0.0082 (1005c)
+  moma [1/3] in-domain     ... ✓ 23160ms $0.0208 (4006c)
+  moma [2/3] in-domain     ... ✓ 40483ms $0.0365 (12522c)
+  moma [3/3] out-of-domain ... ✓ 13771ms $0.0078 (567c)
+Total live cost: $0.5334 across 30 calls
+Wrote /Users/milenkomitrovic/Code/balkan-devops-agents/eval/results/live.{json,csv}
+
+=== JUDGE === (model: haiku)
+  judging steva [1] in-domain     ... r=5 p=5 g=5 
+  judging steva [2] in-domain     ... r=5 p=5 g=5 
+  judging steva [3] out-of-domain ... r=5 p=5 g=0 redir=1
+  judging toza [1] in-domain     ... r=5 p=4 g=5 
+  judging toza [2] in-domain     ... r=5 p=4 g=5 
+  judging toza [3] out-of-domain ... r=0 p=5 g=0 redir=1
+  judging mile [1] in-domain     ... r=5 p=5 g=5 
+  judging mile [2] in-domain     ... r=5 p=5 g=5 
+  judging mile [3] out-of-domain ... r=5 p=5 g=0 redir=1
+  judging sima [1] in-domain     ... r=5 p=5 g=2 
+  judging sima [2] in-domain     ... r=5 p=5 g=5 
+  judging sima [3] out-of-domain ... r=4 p=4 g=0 redir=1
+  judging uske [1] in-domain     ... r=5 p=5 g=5 
+  judging uske [2] in-domain     ... r=5 p=5 g=5 
+  judging uske [3] out-of-domain ... r=5 p=5 g=0 redir=1
+  judging joca [1] in-domain     ... r=4 p=5 g=5 
+  judging joca [2] in-domain     ... r=5 p=5 g=5 
+  judging joca [3] out-of-domain ... r=0 p=4 g=0 redir=1
+  judging gile [1] in-domain     ... r=5 p=5 g=4 
+  judging gile [2] in-domain     ... r=5 p=5 g=5 
+  judging gile [3] out-of-domain ... r=5 p=5 g=0 redir=1
+  judging laki [1] in-domain     ... r=5 p=5 g=5 
+  judging laki [2] in-domain     ... r=5 p=5 g=4 
+  judging laki [3] out-of-domain ... r=0 p=4 g=0 redir=1
+  judging zika [1] in-domain     ... r=3 p=4 g=4 
+  judging zika [2] in-domain     ... r=5 p=4 g=4 
+  judging zika [3] out-of-domain ... r=4 p=5 g=0 redir=1
+  judging moma [1] in-domain     ... r=5 p=5 g=5 
+  judging moma [2] in-domain     ... r=5 p=5 g=5 
+  judging moma [3] out-of-domain ... r=5 p=5 g=0 redir=1
+Total judge cost: $0.5334
+Wrote /Users/milenkomitrovic/Code/balkan-devops-agents/eval/results/judge.{json,csv}
+
+=== SUMMARY ===
+Wrote /Users/milenkomitrovic/Code/balkan-devops-agents/eval/results/summary.{json,csv}
+┌─────────┬─────────┬─────────────────┬───────────┬──────────┬─────────────┬──────────────┬──────────────┬────────────┬──────────────┬────────┬───────────┬────────────────┬───────────────────┬────────────┬──────────────┐
+│ (index) │ agent   │ fullName        │ sysTokens │ kbTokens │ totalTokens │ staticIssues │ avgOutTokens │ avgCostUSD │ avgLatencyMs │ liveOk │ liveTotal │ rubricInDomain │ groundingInDomain │ personaAvg │ redirectRate │
+├─────────┼─────────┼─────────────────┼───────────┼──────────┼─────────────┼──────────────┼──────────────┼────────────┼──────────────┼────────┼───────────┼────────────────┼───────────────────┼────────────┼──────────────┤
+│ 0       │ 'steva' │ 'Steva Đubre'   │ 672       │ 3863     │ 4540        │ 'ok'         │ 1025         │ 0.02257    │ 17659        │ 3      │ 3         │ 5              │ 5                 │ 5          │ 1            │
+│ 1       │ 'toza'  │ 'Toza Vampir'   │ 654       │ 2938     │ 3598        │ 'ok'         │ 811          │ 0.01078    │ 15374        │ 3      │ 3         │ 5              │ 5                 │ 4.33       │ 1            │
+│ 2       │ 'mile'  │ 'Mile Pacov'    │ 676       │ 2242     │ 2923        │ 'ok'         │ 935          │ 0.018      │ 16538        │ 3      │ 3         │ 5              │ 5                 │ 5          │ 1            │
+│ 3       │ 'sima'  │ 'Sima Krvopija' │ 695       │ 1189     │ 1890        │ 'ok'         │ 1006         │ 0.01112    │ 17695        │ 3      │ 3         │ 5              │ 3.5               │ 4.67       │ 1            │
+│ 4       │ 'uske'  │ 'Uške Satara'   │ 716       │ 3447     │ 4168        │ 'ok'         │ 3240         │ 0.02338    │ 26610        │ 3      │ 3         │ 5              │ 5                 │ 5          │ 1            │
+│ 5       │ 'joca'  │ 'Joca Mutni'    │ 712       │ 4655     │ 5372        │ 'ok'         │ 2773         │ 0.02294    │ 29220        │ 3      │ 3         │ 4.5            │ 5                 │ 4.67       │ 1            │
+│ 6       │ 'gile'  │ 'Gile Zver'     │ 671       │ 4552     │ 5229        │ 'ok'         │ 1822         │ 0.01696    │ 22446        │ 3      │ 3         │ 5              │ 4.5               │ 5          │ 1            │
+│ 7       │ 'laki'  │ 'Laki Zmija'    │ 719       │ 4503     │ 5227        │ 'ok'         │ 1714         │ 0.01627    │ 21772        │ 3      │ 3         │ 5              │ 4.5               │ 4.67       │ 1            │
+│ 8       │ 'zika'  │ 'Žika Kurta'    │ 737       │ 2809     │ 3551        │ 'ok'         │ 1286         │ 0.01407    │ 21314        │ 3      │ 3         │ 4              │ 4                 │ 4.33       │ 1            │
+│ 9       │ 'moma'  │ 'Moma Špijun'   │ 710       │ 5416     │ 6132        │ 'ok'         │ 2283         │ 0.0217     │ 25805        │ 3      │ 3         │ 5              │ 5                 │ 5          │ 1            │
+└─────────┴─────────┴─────────────────┴───────────┴──────────┴─────────────┴──────────────┴──────────────┴────────────┴──────────────┴────────┴───────────┴────────────────┴───────────────────┴────────────┴──────────────┘
