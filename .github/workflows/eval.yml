@@ -1,0 +1,97 @@
+name: Agent Eval
+
+on:
+  # Nightly run on main so we have a rolling baseline.
+  schedule:
+    - cron: "0 4 * * *"  # 04:00 UTC daily
+
+  # On PRs that touch agent definitions or knowledge — that's when scores can move.
+  pull_request:
+    paths:
+      - "src/agents.ts"
+      - "knowledge/**"
+      - "eval/**"
+      - ".github/workflows/eval.yml"
+
+  # Manual trigger from the Actions tab.
+  workflow_dispatch:
+    inputs:
+      model:
+        description: "Model id (GitHub Models catalog)"
+        required: false
+        default: "openai/gpt-4o-mini"
+      agents:
+        description: "Comma-separated agent names (default: all)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+  models: read
+  pull-requests: write  # for posting summary comments on PRs
+
+concurrency:
+  group: eval-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install
+        run: npm ci
+
+      - name: Compile
+        run: npm run compile
+
+      - name: Run eval
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MODEL: ${{ github.event.inputs.model || 'openai/gpt-4o-mini' }}
+          AGENTS_FILTER: ${{ github.event.inputs.agents }}
+        run: |
+          set -e
+          ARGS="--all --provider github-models --model $MODEL"
+          if [ -n "$AGENTS_FILTER" ]; then
+            ARGS="$ARGS --agents $AGENTS_FILTER"
+          fi
+          echo "Running: node eval/run-eval.mjs $ARGS"
+          node eval/run-eval.mjs $ARGS
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results-${{ github.run_id }}
+          path: eval/results/
+          retention-days: 30
+
+      - name: Build PR comment
+        if: github.event_name == 'pull_request' && always()
+        id: comment
+        run: |
+          node eval/format-comment.mjs > comment.md
+          {
+            echo 'body<<EOF'
+            cat comment.md
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Post PR comment
+        if: github.event_name == 'pull_request' && always()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: agent-eval
+          message: ${{ steps.comment.outputs.body }}
+
+      - name: Fail on regression
+        if: always()
+        run: node eval/check-thresholds.mjs

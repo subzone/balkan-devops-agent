@@ -1,0 +1,112 @@
+[
+  {
+    "agent": "steva",
+    "fullName": "Steva Đubre",
+    "role": "Garbage Collection & Data Cleanup",
+    "systemPromptTokens": 433,
+    "knowledgeTokens": 3863,
+    "totalContextTokens": 4301,
+    "knowledgeFiles": 1,
+    "knowledgeBytes": 13578,
+    "issues": "ok"
+  },
+  {
+    "agent": "toza",
+    "fullName": "Toza Vampir",
+    "role": "Night Shift Monitoring & Debugging",
+    "systemPromptTokens": 415,
+    "knowledgeTokens": 2938,
+    "totalContextTokens": 3359,
+    "knowledgeFiles": 1,
+    "knowledgeBytes": 10353,
+    "issues": "ok"
+  },
+  {
+    "agent": "mile",
+    "fullName": "Mile Pacov",
+    "role": "Penetration Testing & Security Audit",
+    "systemPromptTokens": 437,
+    "knowledgeTokens": 2242,
+    "totalContextTokens": 2684,
+    "knowledgeFiles": 1,
+    "knowledgeBytes": 7903,
+    "issues": "ok"
+  },
+  {
+    "agent": "sima",
+    "fullName": "Sima Krvopija",
+    "role": "FinOps & Cloud Cost Optimization",
+    "systemPromptTokens": 456,
+    "knowledgeTokens": 1189,
+    "totalContextTokens": 1651,
+    "knowledgeFiles": 1,
+    "knowledgeBytes": 4190,
+    "issues": "ok"
+  },
+  {
+    "agent": "uske",
+    "fullName": "Uške Satara",
+    "role": "Code Refactoring & Deletion",
+    "systemPromptTokens": 477,
+    "knowledgeTokens": 3447,
+    "totalContextTokens": 3929,
+    "knowledgeFiles": 1,
+    "knowledgeBytes": 12380,
+    "issues": "ok"
+  },
+  {
+    "agent": "joca",
+    "fullName": "Joca Mutni",
+    "role": "Encryption & Data Masking",
+    "systemPromptTokens": 473,
+    "knowledgeTokens": 4655,
+    "totalContextTokens": 5133,
+    "knowledgeFiles": 1,
+    "knowledgeBytes": 16357,
+    "issues": "ok"
+  },
+  {
+    "agent": "gile",
+    "fullName": "Gile Zver",
+    "role": "Heavy Processing & Big Data",
+    "systemPromptTokens": 432,
+    "knowledgeTokens": 4552,
+    "totalContextTokens": 4990,
+    "knowledgeFiles": 1,
+    "knowledgeBytes": 15968,
+    "issues": "ok"
+  },
+  {
+    "agent": "laki",
+    "fullName": "Laki Zmija",
+    "role": "Workarounds & Legacy Bridges",
+    "systemPromptTokens": 480,
+    "knowledgeTokens": 4503,
+    "totalContextTokens": 4988,
+    "knowledgeFiles": 1,
+    "knowledgeBytes": 15815,
+    "issues": "ok"
+  },
+  {
+    "agent": "zika",
+    "fullName": "Žika Kurta",
+    "role": "Architecture Advisor & Critic",
+    "systemPromptTokens": 498,
+    "knowledgeTokens": 2809,
+    "totalContextTokens": 3312,
+    "knowledgeFiles": 1,
+    "knowledgeBytes": 9974,
+    "issues": "ok"
+  },
+  {
+    "agent": "moma",
+    "fullName": "Moma Špijun",
+    "role": "Auditing & User Activity Tracking",
+    "systemPromptTokens": 471,
+    "knowledgeTokens": 5416,
+    "totalContextTokens": 5893,
+    "knowledgeFiles": 1,
+    "knowledgeBytes": 19016,
+    "issues": "ok"
+  }
+]

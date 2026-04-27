@@ -1,0 +1,11 @@
+agent,fullName,role,systemPromptTokens,knowledgeTokens,totalContextTokens,knowledgeFiles,knowledgeBytes,issues
+steva,Steva Đubre,Garbage Collection & Data Cleanup,433,3863,4301,1,13578,ok
+toza,Toza Vampir,Night Shift Monitoring & Debugging,415,2938,3359,1,10353,ok
+mile,Mile Pacov,Penetration Testing & Security Audit,437,2242,2684,1,7903,ok
+sima,Sima Krvopija,FinOps & Cloud Cost Optimization,456,1189,1651,1,4190,ok
+uske,Uške Satara,Code Refactoring & Deletion,477,3447,3929,1,12380,ok
+joca,Joca Mutni,Encryption & Data Masking,473,4655,5133,1,16357,ok
+gile,Gile Zver,Heavy Processing & Big Data,432,4552,4990,1,15968,ok
+laki,Laki Zmija,Workarounds & Legacy Bridges,480,4503,4988,1,15815,ok
+zika,Žika Kurta,Architecture Advisor & Critic,498,2809,3312,1,9974,ok
+moma,Moma Špijun,Auditing & User Activity Tracking,471,5416,5893,1,19016,ok

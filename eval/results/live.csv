@@ -1,0 +1,3808 @@
+agent,caseIndex,kind,prompt,response,inputTokens,cacheCreate,outputTokens,costUSD,durationMs,ok,error
+steva,0,in-domain,Imam S3 bucket sa logovima starijim od 90 dana. Kako da to počistim automatski?,"**NAJJEDNOSTAVNIJE - POSTAVI LIFECYCLE POLICY!** Umesto ručnog brisanja, pusti S3 da radi za tebe.
+
+## Automated Cleanup sa AWS S3 Lifecycle
+
+Napravi `lifecycle.json`:
+
+```json
+{
+  ""Rules"": [
+    {
+      ""Id"": ""DeleteOldLogs"",
+      ""Status"": ""Enabled"",
+      ""Prefix"": ""logs/"",
+      ""Expiration"": {
+        ""Days"": 90
+      }
+    }
+  ]
+}
+```
+
+I postavi na bucket:
+
+```bash
+aws s3api put-bucket-lifecycle-configuration \
+  --bucket tvoj-bucket-sa-logovima \
+  --lifecycle-configuration file://lifecycle.json
+```
+
+**Gotovo!** S3 će automatski brisati logove starije od 90 dana. Više ne trebaš da razmišljaš o tome.
+
+---
+
+## Ako već imaš logove koje trebaš obrisati SADA
+
+```bash
+# Nađi sve što je starije od 90 dana
+aws s3api list-objects-v2 \
+  --bucket tvoj-bucket \
+  --prefix logs/ \
+  --query ""Contents[?LastModified<='$(date -u -d '90 days ago' +%Y-%m-%d)'].[Key]"" \
+  --output text | \
+  xargs -I {} aws s3 rm s3://tvoj-bucket/{}
+```
+
+**ILI** (sigurnije - samo pregled bez brisanja):
+
+```bash
+aws s3api list-objects-v2 \
+  --bucket tvoj-bucket \
+  --prefix logs/ \
+  --query ""Contents[?LastModified<='$(date -u -d '90 days ago' +%Y-%m-%d)']"" \
+  --output table
+```
+
+---
+
+## Bonus - Optimizacija Troškova
+
+Ako logove trebaju **duže**, ali ne trebaju ti često:
+
+```json
+{
+  ""Rules"": [
+    {
+      ""Id"": ""LogsLifecycle"",
+      ""Status"": ""Enabled"",
+      ""Prefix"": ""logs/"",
+      ""Transitions"": [
+        {
+          ""Days"": 30,
+          ""StorageClass"": ""STANDARD_IA""
+        },
+        {
+          ""Days"": 60,
+          ""StorageClass"": ""GLACIER""
+        }
+      ],
+      ""Expiration"": {
+        ""Days"": 365
+      }
+    }
+  ]
+}
+```
+
+Ovako:
+- **0-30 dana** → STANDARD (brz pristup)
+- **30-60 dana** → STANDARD_IA (jeftiniji)
+- **60-365 dana** → GLACIER (najjeftinije)
+- **365+ dana** → OBRISANO
+
+---
+
+**Steva kaže:** Postavi lifecycle policy i zaboravi. To je jedino pametno. Ručno brisanje je besmislica - ideš u rudarsku proizvodnju umesto da pustišVAŠ SAM SISTEM DA RADI! KRŠ I LOM! ⚙️
+
+Želiš li da vidim tvoju trenutnu konfiguraciju ili trebaju li ti specifični filteri?",9,6604,1044,0.0165607,18935,true,
+steva,1,in-domain,"Docker zauzima 50GB na disku, šta da radim?","**KRŠ I LOM! 50GB smeća od Dockera?!** Verovatno skupljao images, stopped containers, dangling volumes... Hajde da čistimo.
+
+---
+
+## Prvo — Nađi gde ide smeće
+
+```bash
+# Koliko prostora Docker koristi?
+docker system df
+
+# Detaljan pregled
+docker system df -v
+```
+
+Output će te pokazati:
+- **Images** - obično biggest offender
+- **Containers** - stopped containeri sa filésistémima
+- **Volumes** - dangling ili stare baze
+
+---
+
+## Rešenja (od mekšeg ka agresivnom)
+
+### 1️⃣ **Sigurno čišćenje** (preporučujem)
+
+```bash
+# Briši samo što definitivno nije potrebno
+docker container prune -f        # Stopped containers
+docker image prune -f            # Dangling images (neikorisćene)
+docker volume prune -f           # Orphaned volumes
+docker network prune -f          # Unused networks
+```
+
+Ovo bi trebalo da oslobodi **većinu prostora** bez rizika.
+
+---
+
+### 2️⃣ **Agresivnije** (ako je kritično)
+
+```bash
+# Briši sve nekorišćene images starije od 30 dana
+docker image prune -a -f --filter ""until=720h""
+
+# Briši SVE što nije korišćeno (PAZI - obrisaće I dangling I old images!)
+docker system prune -a -f --volumes
+```
+
+**⚠️ OPASNOST:** Ako imaš image koji nije pokrenut 30 dana, obrisaće ga! Moraćeš nanovo da pulluj.
+
+---
+
+### 3️⃣ **Nađi najveće zagušljivce**
+
+```bash
+# Top 10 images po veličini
+docker images --format ""table {{.Repository}}\t{{.Tag}}\t{{.Size}}"" | sort -k3 -hr | head -10
+
+# Trenutni containers i njihov disk
+docker ps -a --format ""table {{.ID}}\t{{.Names}}\t{{.Size}}""
+
+# Dangling images
+docker images -f ""dangling=true"" --format ""table {{.ID}}\t{{.Size}}""
+```
+
+Obezbedi da nemaš stare `<none>:<none>` images - briši ih bez razmišljanja!
+
+---
+
+### 4️⃣ **Ako su volumes problem**
+
+```bash
+# Koji volumes zauzimaju prostora
+docker volume ls -f ""dangling=false"" --format ""{{.Name}}""
+
+# Obrisi specifan volume (ako nemaš DB bitan u njemu!)
+docker volume rm <volume-name>
+
+# Ili sve dangling volumes odjednom
+docker volume ls -f ""dangling=true"" -q | xargs docker volume rm
+```
+
+---
+
+## Brz plan akcije:
+
+```bash
+# 1. Vidi šta imaš
+docker system df -v
+
+# 2. Briši sigurno
+docker container prune -f && \
+docker image prune -f && \
+docker volume prune -f && \
+docker network prune -f
+
+# 3. Nadzor rezultata
+docker system df
+
+# 4. Ako još nije dovoljno, briši stare images
+docker image prune -a -f --filter ""until=720h""
+```
+
+---
+
+## Konfiguracija da se ovo ne ponavlja
+
+```bash
+# Docker daemon config (/etc/docker/daemon.json)
+{
+  ""log-driver"": ""json-file"",
+  ""log-opts"": {
+    ""max-size"": ""10m"",
+    ""max-file"": ""3""
+  },
+  ""storage-driver"": ""overlay2"",
+  ""image-pull-progress"": ""plain""
+}
+
+# Restartuj daemon
+sudo systemctl restart docker
+```
+
+---
+
+**Steva kaže:** Prvo sigurno prune, nadzori rezultate. Ako moraš agresivnije, znaj da ćeš nanovo pullati images. **Nemoj da briješ volumes ako nemaš backup baza!** 🗑️
+
+Javi ako ti i dalje ne oslobodi dovoljno prostora - verovatno imaš neke gigantske slurp images koje morate individualno brisati.",9,1255,1341,0.011872750000000001,21366,true,
+steva,2,out-of-domain,Treba mi multi-region disaster recovery strategija.,"Ej, to nije moja oblast, brate! 🚫 
+
+Ti ovde tražiš arhitekturu i strategiju, a ja se bavim **čišćenjem sistema, brisanjem smeća i cleanup-om baza**. To je posao za **balkan-ziku** — on ti je eksperta za arhitekturu i disaster recovery strategije.
+
+Ja mogu kad je gotova strategija da ti pomognem sa:
+- **Čišćenjem backup-ova** što su stari i nekorišćeni (S3 Glacier, Azure Archive)
+- **Optimizacijom storage** u disaster recovery sistemi
+- **Cleanup-om replication log-ova** što se nakupljaju
+- **Brisanjem stanih DR test okruženja**
+- **Lifecycle policy-jima** za DR snapshots i backups
+
+Ali strategija? To je **balkan-zika**, ne ja. Pitaj njega kako postaviti multi-region failover, RPO/RTO, itd.
+
+**KRŠ I LOM, ali ne taj KRŠ I LOM!** 😤",9,1250,391,0.0071164999999999996,12169,true,
+toza,0,in-domain,Java aplikacija puca sa OutOfMemoryError svake noći oko 3 ujutru. Kako da nađem uzrok?,"*Mirno je noću. Previše mirno. Dok Java žvće memoriju.*
+
+OOM u 3 ujutru. Klasično. Obično je memory leak ili neka scheduled task koja se triggeruje noću. Evo kako da nađeš uzrok:
+
+---
+
+## **Korak 1: Heap Dump pri krahu (trenutno)**
+
+```bash
+# Dodaj u JAVA_OPTS
+-XX:+HeapDumpOnOutOfMemoryError 
+-XX:HeapDumpPath=/var/logs/heapdumps
+
+# Kada se desi OOM, dump će biti tu
+ls -lh /var/logs/heapdumps/
+```
+
+---
+
+## **Korak 2: Nađi šta jede memoriju**
+
+```bash
+# Dok app radi - redovno
+jmap -histo PID | head -50
+
+# Vidiš Byte arrays na prvom mestu? String table? 
+# Izlazna redosled = ko najviše baca u heap
+```
+
+---
+
+## **Korak 3: Temporalan pattern**
+
+```bash
+# Šta je zajedničko za sve OOM-e noću?
+grep -i ""exception\|error"" /var/log/app.log | \
+  grep ""3:0[0-9]:"" | tail -20
+
+# Timeline:
+# 2024-04-26 03:00:15 - Scheduled job start
+# 2024-04-26 03:05:42 - Memory climbing
+# 2024-04-26 03:47:23 - OutOfMemoryError
+```
+
+**Pitanja za sebe:**
+- Koji job se pokreće u 3 ujutru? (Backup, reporting, cache refresh?)
+- Da li krash uvek u ISTOJ minuti? → Job problem
+- Da li je post-deploya počelo? → Regression
+
+---
+
+## **Korak 4: Analiza Heap Dumpa (Eclipse MAT)**
+
+1. Download Eclipse Memory Analyzer (besplatno)
+2. Open heap dump `.hprof` fajl
+3. Pogledaj:
+   - **Leak Suspects** → Top memory consumers
+   - **Dominator Tree** → Ko drži najviše memorije
+   - **Histogram** → Objekti po tipu
+
+---
+
+## **Kandidati za 3 AM klasiku:**
+
+```
+1. ❌ LOAD_ALL_DATA_IN_MEMORY job
+   List<BigObject> allData = queryDatabase();  // 2GB overnight?
+
+2. ❌ Connection pool leak
+   connections never closed → 100 connections × 100MB = OOM
+
+3. ❌ Cache bez eviction
+   Map<String, HugeObject> cache = new HashMap();  // Raste do beskonačnosti
+
+4. ❌ Thread-local leaks
+   ThreadLocal<Data> = new ThreadLocal();  // Thread die, ThreadLocal żive
+   
+5. ❌ String intern() abuse
+   String s = largeString.intern();  // Intern pool fragmented
+```
+
+---
+
+## **Brz fix dok čekaš Heap dump analizu:**
+
+```bash
+# Povećaj heap (privremeno)
+-Xmx8g  # Umesto 4g
+
+# Ili skaliraj horizontalno
+# Ili onemogući 3 AM job do što nađeš uzrok
+```
+
+---
+
+Javi mi:
+- **Grep rezultat** iz logova (timeline OOM-a)
+- **Heap dump analizu** (šta Eclipse MAT pokazuje?)
+- **Koji job se pokreće noću?**
+
+*Noć će čekati. Logovi nikad ne lažu.*",9,5263,1101,0.01518845,19341,true,
+toza,1,in-domain,Kako da napišem CloudWatch Insights query za 5xx greške u poslednjih 24h?,"Mirno je. Previše mirno. Dok ne vidim 5xx.
+
+Evo šta trebas:
+
+**Osnovna query — samo greške:**
+```
+fields @timestamp, httpStatus, @message
+| filter httpStatus >= 500
+| sort @timestamp desc
+| limit 100
+```
+
+**Sa statističkom analizom:**
+```
+fields @timestamp, httpStatus
+| filter httpStatus >= 500
+| stats count() as total_errors by httpStatus
+| sort total_errors desc
+```
+
+**Sa vremenom — pattern detection:**
+```
+fields @timestamp, httpStatus
+| filter httpStatus >= 500
+| stats count() as error_count by bin(1h)
+```
+
+**Sa request ID — za trace kroz servise:**
+```
+fields @timestamp, @requestId, httpStatus, @duration, @message
+| filter httpStatus >= 500
+| sort @timestamp desc
+```
+
+**Sa source — koja služba grešku šalje:**
+```
+fields @timestamp, service, httpStatus, @message
+| filter httpStatus >= 500
+| stats count() as errors by service
+| sort errors desc
+```
+
+**Ako su logovi u JSON formatu:**
+```
+fields @timestamp, status, duration, error_message, request_id
+| filter status >= 500
+| sort @timestamp desc
+```
+
+---
+
+**Saveti:**
+- Zameni `httpStatus` sa poljem koje koristiš u logovima (može biti `status`, `@http`, `http_code`)
+- `@timestamp` je built-in — CloudWatch sam dodaje
+- `@message` je ceo log red — dobro za debugovanje
+- `sort @timestamp desc` — najnovije prvo
+
+**Što je noći greška?** Tražim pattern. Samo besni retry ili nešto dublje?",9,4645,812,0.011958950000000001,15180,true,
+toza,2,out-of-domain,Treba mi Reserved Instances plan za moj AWS racun.,"Mirno je. Previše mirno.
+
+Ali to nije moj posao. Reserved Instances su novac — FinOps domen.
+
+**Pozovi:** `balkan-sima`
+
+Sima ćuje kako se štedi na AWS-u. Ja samo vidim što se dešava noću kad logovi riknu.",9,1248,233,0.006187499999999999,10528,true,
+mile,0,in-domain,Imam Security Group sa pravilom 0.0.0.0/0 na portu 22. Da li je to problem?,"*Pazi vamo...* 🚨
+
+**DA, OVO JE OZBILJNO!** To je jedna od najvećih rupica koje mogu da nađem.
+
+Daj da ti objasnim šta si upravo pokrenuo:
+
+## Šta Znači 0.0.0.0/0 na Portu 22
+
+```
+0.0.0.0/0  = CELI INTERNET
+Port 22    = SSH pristup
+Result     = Svako sa bilo kog dela planeta može pokušati pristupiti tvom serveru
+```
+
+## Rizici - Stvarno Opasni Scenariji
+
+1. **Brute Force Napadi** ⚡
+   - Automatizirani botovi konstantno pokušavaju defaultne kredencijale
+   - `admin/admin`, `root/password`, itd.
+   - Milioni pokušaja dnevno
+
+2. **Zero-Day Exploiti** 🎯
+   - Ako postoji rupa u SSH daemon-u, ceo internet je target
+   - CVE u OpenSSH = instant compromise
+
+3. **Credential Stuffing** 💀
+   - Ako je tvoja lozinka procurela negde drugde → instant pristup
+   - Bumerang efekt sa LinkedIn, GitHub leaks, itd.
+
+## Kako to Testiraš (Njušim ja nešto...)
+
+```bash
+# Nmap sken (simulacija napada)
+nmap -p 22 -sV <tvoj-ip>
+
+# Proveraš jesu li logovi puni pokušaja
+tail -f /var/log/auth.log | grep ""Failed password""
+# Ili na AWS CloudTrail - vidiš kojih IP-a pokušavaju
+
+# fail2ban statistika
+sudo fail2ban-client status sshd
+```
+
+## ODMAH TO PROMENI! ✅
+
+**Opcija 1: BASTION HOST (Preporučeno za produkciju)**
+```
+0.0.0.0/0       ↓ SSH na port 22      (samo Bastion)
+Bastion Server  ↓ SSH na port 22      (tvoj pravi server)
+```
+
+**Opcija 2: VPN/SSM Session Manager**
+```
+# AWS systems manager - nema SSH uopšte!
+aws ssm start-session --target i-xxxxx
+# Nema credentials, sve kroz IAM role
+```
+
+**Opcija 3: IP Whitelist (ako znaš tačne IP-ove)**
+```
+203.0.113.0/32   → SSH (samo tvoj office)
+10.0.0.0/8       → SSH (samo internal network)
+```
+
+## Security Group Pravilo - Kako Izgledati
+
+```json
+{
+  ""GroupId"": ""sg-xxxxx"",
+  ""IpPermissions"": [
+    {
+      ""IpProtocol"": ""tcp"",
+      ""FromPort"": 22,
+      ""ToPort"": 22,
+      ""IpRanges"": [
+        {
+          ""CidrIp"": ""203.0.113.0/24"",  // ✅ SPECIFIČAN IP
+          ""Description"": ""Office SSH""
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Mile's Golden Rule
+> **Nikad `0.0.0.0/0` na SSH (22), RDP (3389), baza podataka (3306, 5432)**
+
+---
+
+**Šta konkretno trebaš?** Javi mi:
+- Gde je server? (AWS, Azure, on-prem?)
+- Iz kog IP-a se konektuješ?
+- Koliko korisnika ima pristup?
+
+Da se ne javi neko dok ti ja sad ne zatvorim ovu rupicu... 👀",9,4487,1381,0.01559245,22134,true,
+mile,1,in-domain,Kako da skeniram Terraform kod za hardcoded secrets?,"Pazi vamo... njušim nešto. Hardcoded secrets u Terraform kodu je klasična rupa! Evo kako da ih nađeš:
+
+## 🔍 Alati za Scanning
+
+### 1. **TruffleHog** (Moj omiljeni)
+```bash
+# Skenira ceo repozitorijum sa regex i entropy detektorima
+trufflehog filesystem . --json --regex --entropy
+
+# Za Git istoriju (opasno - često ima dobitaka)
+trufflehog git https://github.com/repo-url.git --json
+
+# TF specijalno
+trufflehog filesystem . --only-verified
+```
+
+### 2. **GitLeaks** (Comprehensive)
+```bash
+# Branže
+gitleaks detect --source . --verbose
+
+# Git istorija + trenutni kod
+gitleaks detect --source . --log-opts=""-all""
+
+# JSON output za dalji report
+gitleaks detect --report-path secrets-report.json --report-format sarif
+```
+
+### 3. **Git Secrets** (Za AWS keys specijalno)
+```bash
+git secrets --scan
+git secrets --scan-history
+
+# Instalacija hook-a (pre-commit protection)
+git secrets --install
+git secrets --register-aws
+```
+
+### 4. **Checkov** (IaC skeniranje)
+```bash
+# Detektuje TF misconfigurations + secrets
+checkov -d . --check CKV_SECRET_6
+
+# Samo secrets
+checkov -f main.tf --check CKV_SECRET_6
+```
+
+### 5. **tfsec** (Terraform focused)
+```bash
+tfsec . --format json > tfsec-report.json
+```
+
+## ❌ Šta Mile Traži
+
+```hcl
+# RUPA #1 - Hardcoded password
+resource ""aws_db_instance"" ""bad"" {
+  master_username = ""admin""
+  master_password = ""MyP@ssw0rd123!""  # 🚨 NAŠAO SAM RUPICU!
+}
+
+# RUPA #2 - AWS kredencijali u provideru
+terraform {
+  required_providers {
+    aws = {
+      source  = ""hashicorp/aws""
+      version = ""~> 5.0""
+    }
+  }
+}
+
+provider ""aws"" {
+  region     = ""us-east-1""
+  access_key = ""AKIAIOSFODNN7EXAMPLE""  # 🚨 PAZI VAMO!
+  secret_key = ""wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY""
+}
+
+# RUPA #3 - API ključ u local-exec
+resource ""null_resource"" ""deploy"" {
+  provisioner ""local-exec"" {
+    command = ""curl -H 'Authorization: Bearer sk-1234567890abcdef' https://api.example.com""
+  }
+}
+
+# RUPA #4 - Private key direktno
+resource ""aws_key_pair"" ""bad"" {
+  key_name   = ""my-key""
+  public_key = file(""${path.module}/id_rsa.pub"")
+  # Ako je id_rsa u GIT-u... Mile ima dobar dan!
+}
+```
+
+## ✅ Kako Da Se Osiguraš
+
+```hcl
+# DOBRO - Koristi variables.tf i .tfvars (u .gitignore!)
+variable ""db_password"" {
+  type      = string
+  sensitive = true  # Ne prikazuj u log-ovima
+}
+
+variable ""api_key"" {
+  type      = string
+  sensitive = true
+}
+
+resource ""aws_db_instance"" ""good"" {
+  master_username = ""admin""
+  master_password = var.db_password  # Iz external source
+}
+
+# BOLJE - Koristi AWS Secrets Manager
+data ""aws_secretsmanager_secret_version"" ""db_password"" {
+  secret_id = aws_secretsmanager_secret.db_password.id
+}
+
+resource ""aws_db_instance"" ""better"" {
+  master_username = ""admin""
+  master_password = jsondecode(data.aws_secretsmanager_secret_version.db_password.secret_string)[""password""]
+}
+
+# NAJBOLJE - Environment variables
+provider ""aws"" {
+  # Koristi AWS_ACCESS_KEY_ID i AWS_SECRET_ACCESS_KEY iz okruženja
+  region = var.aws_region
+}
+```
+
+## 🛡️ Pre-Commit Hook (Zaštita Pre nego što Commituješ)
+
+```bash
+# Instalacija
+pip install pre-commit truffleog gitleaks
+
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/trufflesecurity/trufflehog
+    rev: v3.63.0
+    hooks:
+      - id: trufflehog
+        name: TruffleHog
+        entry: trufflehog filesystem . --json
+        language: system
+        stages: [commit]
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.2
+    hooks:
+      - id: gitleaks
+        entry: gitleaks detect --source . -v
+        language: system
+        stages: [commit]
+
+  - repo: https://github.com/aws/git-secrets
+    rev: main
+    hooks:
+      - id: git-secrets
+        entry: git secrets --scan
+        language: system
+        stages: [commit]
+
+# Aktivacija
+pre-commit install
+```
+
+## 📋 Mile's Security Scanning Pipeline
+
+```bash
+#!/bin/bash
+echo ""🔍 Njušim Terraform kod za secrets...""
+
+echo ""1️⃣  GitLeaks...""
+gitleaks detect --source . --verbose
+
+echo ""2️⃣  TruffleHog...""
+trufflehog filesystem . --json --regex --entropy
+
+echo ""3️⃣  Checkov za misconfigurations...""
+checkov -d . --check CKV_SECRET_6
+
+echo ""4️⃣  tfsec za TF vulnerabilities...""
+tfsec . --format json
+
+echo ""✅ Skeniranje završeno!""
+```
+
+## 🎯 Kritični Patterns Mile Skenira
+
+```
+- AWS_ACCESS_KEY_ID = AKIA*
+- PRIVATE KEY (RSA, EC, OpenSSH)
+- password = ""
+- secret_key = ""
+- api_key = ""
+- Authorization: Bearer sk-*
+- DATABASE_URL sa credentialima
+- GITHUB_TOKEN, GITLAB_TOKEN
+```
+
+---
+
+**Pazi vamo:** Ako nađeš secret u Git istoriji, već je kompromitovan! Trebalo bi:
+1. Rotate credential-e IMMEDIATELY
+2. `git filter-repo` da obrisaneš iz istorije
+3. Forced push (ozbiljno!)
+
+Koju verziju korištiš - najjednostavnije ili full pipeline scanning?",9,4475,2030,0.01810225,24451,true,
+mile,2,out-of-domain,Kako da očistim unused Docker images?,"Pazi vamo... to je malo više za mog kolegu **balkan-steve** — on se bavi čišćenjem i održavanjem resursa! 🧹
+
+Međutim, ako ti zanima **sigurnosna perspektiva** — njušim nešto... stari, nekorišćeni Docker images mogu biti pravi security problem:
+
+🚩 **Red flags koje vidim:**
+
+```bash
+# ❌ OPASNO - Stari images sa vulnerability-jima
+docker image ls -a  # Proveravaj regularno
+
+# Images iz 2024 koji nisu ažurirani
+# mogu imati 50+ CVE-ja!
+```
+
+✅ **Mile's Quick Security Tips:**
+- Uvek skenuj images pre nego što ih izbacuješ (ili čuvaš): `trivy image IMAGE_NAME`
+- Ako obrišeš image koji je korišćen kao base za prod container — problem!
+- Proveri koji containers zavise od tog image-a: `docker ps -a --filter ancestor=IMAGE`
+
+**Za detaljne instrukcije o čišćenju**, poziuui **@balkan-steve** — on će ti pokazati kako koristiti `docker image prune`, `docker rmi`, i da li treba dry-run prvo.
+
+Ja ti mogu pomoći ako imaš pitanja o security-ju tih images (scanning CVE-ja, hardening base images, i slično)! 🔍",9,1239,734,0.00859325,16067,true,
+sima,0,in-domain,Imam 20 EC2 t3.large instanci 24/7 u dev environmentu. Kako da smanjim trošak?,"Čekaj malo... **20 t3.large instanci, 24/7, u DEV okruženju?!** A ko će oto da plati?! 😱
+
+To je čista besmisao! Razvijači spavaju, serveri rade, novac gori. Evo ti konkretnog plana za drastičnu uštedu:
+
+## 🔥 HITNE AKCIJE (Ušteda: ~70-80%)
+
+### 1. **Automat za gašenje dev okruženja** (BIGGEST WIN)
+Dev serveri verovatno rade samo radnim danima 08:00-19:00, što znači:
+- 57 sati / 168 sati = samo 34% time-a je potreban
+- **Ušteda: 66% od compute troškova**
+
+```bash
+# CloudWatch Events + Lambda schedule
+# Stop svih instanci: 19:00 (radni dani)
+# Start svih instanci: 08:00 (radni dani)
+
+# Tag sve dev instance:
+aws ec2 create-tags --resources i-xxxx i-yyyy ... \
+  --tags Key=AutoStop,Value=true Key=Environment,Value=dev
+
+# EventBridge rule za gašenje
+aws events put-rule --name stop-dev-servers \
+  --schedule-expression ""cron(0 19 ? * MON-FRI *)""
+```
+
+**Godišnja ušteda samo od ovoga: ~$4,500-5,000** (od ~$7,500-8,000)
+
+---
+
+### 2. **Right-sizing - t3.large je LOŠ izbor za dev** 
+- **t3.large**: 2 vCPU, 8GB RAM = $0.0832/sat
+- **t3.medium**: 2 vCPU, 4GB RAM = $0.0416/sat (50% jeftinije!)
+- **t3.small**: 2 vCPU, 2GB RAM = $0.0208/sat (75% jeftinije!)
+
+Pitaj razvijače: **Da li im stvarno treba 8GB RAM za dev?** Obično trebaju ~2GB, a ostatak visi empty.
+
+**Preporuka**: Smanji na **t3.small** ili **t3.micro** (ako je moguće)
+- **Ušteda: 50-75% od compute troškova**
+
+---
+
+### 3. **Spot Instances za dev** (kada ne auto-stop-uješ)
+- **Spot t3.large**: ~$0.025/sat (70% jeftnije od on-demand)
+- Idealno za dev jer je OK ako se instance ugase
+
+```yaml
+# Launch template sa Spot
+LaunchTemplate:
+  InstanceMarketOptions:
+    MarketType: spot
+    SpotOptions:
+      MaxPrice: ""0.025""
+      InterruptionBehavior: stop  # stop umesto terminate
+```
+
+---
+
+### 4. **Konsoliduj instanci** - Zašto 20 odvojenih?
+- Možda možeš da staviš development okruženja u **ECS/Fargate** umesto EC2
+- Ili koristi **Docker Compose** + EC2 Auto Scaling Group sa manjim brojem instanci
+- Fargate: Plaćaš samo ono što koristiš, idealno za dev
+
+---
+
+## 📊 PROCENA UŠTEDE (trenutni vs. optimizovani):
+
+| Scenario | t3.large 24/7 | Optimizovan | Ušteda |
+|----------|---------------|------------|--------|
+| **Trenutno (20x)** | ~$13,107/godinu | - | - |
+| **+ Auto-Stop** | - | ~$4,370/godinu | 67% ↓ |
+| **+ t3.small** | - | ~$1,460/godinu | 89% ↓ |
+| **+ Spot** | - | ~$438/godinu | 97% ↓ |
+
+**Zaključak**: Ako primeniš sve → **Ušteda: $12,669/godinu od 20 instanci!**
+
+---
+
+## ✅ AKCIONI PLAN (prioritet)
+
+1. **Odmah**: Postavi auto-stop schedule (30 min posla, $5,000/godinu uštede)
+2. **Sutra**: Proveri sa devovima da li mogu t3.small (dodatnih $2,500-3,000)
+3. **Sledele nedelje**: Migriraj na Fargate ako je moguće (do $12,000 uštede)
+4. **Mesec dana**: Pregledaj sve tagove i uklonji orphaned resurse
+
+---
+
+A sada mi reci - **koliko je sati dnevno zapravo potrebno da rade ta okruženja?** Jer ako su samo tokom standarda, prvi plan je golden. 💰",9,1271,1551,0.01265045,24326,true,
+sima,1,in-domain,S3 bucket sa 5TB podataka koji se retko čitaju. Kako da uštedim?,"**A KO ĆE OTO DA PLATI?!** 5TB je ozbiljna cifra za ""retko čitane"" podatke! 🔥
+
+Evo šta moraš da uradiš **ODMAH**:
+
+## 1. **S3 Intelligent-Tiering** - ""The Money Saver""
+
+Prebaci bucket na `INTELLIGENT_TIERING` - AWS će AUTOMATSKI premještati fajlove između tier-a:
+
+```json
+{
+  ""Rules"": [{
+    ""Id"": ""AutoTierArchive"",
+    ""Status"": ""Enabled"",
+    ""Filter"": { ""Prefix"": """" },
+    ""Transitions"": [
+      {
+        ""Days"": 0,
+        ""StorageClass"": ""INTELLIGENT_TIERING""
+      }
+    ]
+  }]
+}
+```
+
+**Ušteda**: ~60-70% od Standard cene! ✂️
+
+---
+
+## 2. **Lifecycle Policy** - Ako znaju da će biti retko čitani
+
+Ako su podataci stariji od 30 dana, prebaci ih agresivnije:
+
+```json
+{
+  ""Rules"": [{
+    ""Id"": ""InfrequentAccessArchive"",
+    ""Status"": ""Enabled"",
+    ""Filter"": { ""Prefix"": """" },
+    ""Transitions"": [
+      { ""Days"": 30, ""StorageClass"": ""STANDARD_IA"" },
+      { ""Days"": 90, ""StorageClass"": ""GLACIER"" },
+      { ""Days"": 365, ""StorageClass"": ""DEEP_ARCHIVE"" }
+    ],
+    ""Expiration"": { ""Days"": 2555 }
+  }]
+}
+```
+
+**Troškovi (aproksimacija za 5TB):**
+- **Standard**: $115/mesec
+- **Standard-IA**: $25/mesec (+ $0.01/1K pristupa)
+- **Glacier**: $4/mesec (+ $0.004/1K pristupa)
+- **Deep Archive**: $1/mesec
+
+---
+
+## 3. **Čekaj, koliko često čitaju podatke?** 
+
+To je ključno:
+- **< 1x mesečno** → DEEP_ARCHIVE (ušteda 99%)
+- **1-4x mesečno** → GLACIER
+- **Uvek pristup ali ne često** → INTELLIGENT_TIERING
+- **Neće ih nikad čitati?** → OBRIŠITE IH! 🗑️
+
+---
+
+## 4. **CloudWatch Alert** - Čuva novčanik:
+
+```bash
+aws s3api put-bucket-lifecycle-configuration \
+  --bucket moj-bucket \
+  --lifecycle-configuration file://lifecycle.json
+```
+
+**Konkretan primer**: 5TB sa Intelligent-Tiering te može koštati samo **$30-50/mesec** umjesto $115. To je **70% manja račun!**
+
+---
+
+**🎯 SIMA'S TRIK:** Dodaj **Versioning** samo ako je BAŠ potrebno (svaka verzija se plaća!).
+
+Koji je use case? Backup, logs, archive? Mogu biti precizniji s preporukom! 💰",9,0,1005,0.008465,16563,true,
+sima,2,out-of-domain,Kako da debug-ujem memory leak u Node.js aplikaciji?,"Slušaj, brate, **memory leak je tvoj problem, a moj problem je račun za Cloud!** 🤨
+
+Ajde, bez šale - to pitanje nije iz moje jurisdikcije. Ja se bavim samo **troškovima i FinOps-om**. Za debugging aplikacija i memory leak-ove, trebaš da razgovaraš sa **balkan-toza**-om koji je ekspert za logs i troubleshooting.
+
+Međutim, dodaću samo jedno - ako imaš memory leak koji uzrokuje da su instance sve vreme na 100% memorije, to će te **skrupati novac**! 💸 Kreni prvo sa `balkan-toza`-om da to ispravi, a onda kad je aplikacija optimizovana, ja ću ti pomoći da patuljastiš compute troškove.
+
+**Kontaktiraj `balkan-toza`** za debug-ovanje!
+
+---
+
+*A ko će ovo da plati?!* 😤",9,642,404,0.0051012,12131,true,
+uske,0,in-domain,"Imam Terraform modul od 800 linija koji upravlja celim VPC, security groups, RDS i Lambda. Kako da ga refaktorišem?",,0,0,0,0.054528200000000006,53683,false,Reached maximum budget ($0.05)
+uske,1,in-domain,Dockerfile mi ima 15 RUN naredbi i image je 2GB. Optimizuj.,"**UŠKE GOVORI:**
+
+2GB za image? Ovo ide NA PANJ! **15 RUN naredbi** = **15 nepotrebnih layer-a**. Svaki RUN kreira layer, a ti verovatno brišeš cache između njega.
+
+---
+
+## 🔨 **PROBLEMA:**
+
+1. **15 RUN = 15 layera** - svaki layer dodaj veličinu
+2. **apt cache/npm cache/pip cache** - nikada ne čistiš
+3. **Verovatno `node:18` umesto `node:18-alpine`** - full OS umesto minimal
+4. **Copy-pasta dependency install** - nema layer caching
+5. **Production i build fajlovi zajedno** - nema multi-stage build
+
+---
+
+## 🔪 **KAKO DA SEČU:**
+
+Prosledi mi tvoj **Dockerfile** pa da ti dam **konkretne seče**, ali evo **šablona koji RADI:**
+
+```dockerfile
+# BUILD STAGE
+FROM node:18-alpine AS builder
+WORKDIR /app
+
+# Copy samo što trebaš za build
+COPY package*.json ./
+RUN npm ci --only=production && \
+    npm cache clean --force
+
+COPY . .
+RUN npm run build
+
+# PRODUCTION STAGE - ČIST KAO PIŠTOLJE
+FROM node:18-alpine
+WORKDIR /app
+
+# Samo runtime dependencies
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package*.json ./
+
+# Non-root user
+USER node
+
+CMD [""node"", ""dist/index.js""]
+```
+
+**Image sa ovim: ~150MB umesto 2GB!**
+
+---
+
+## ✂️ **ŠTA SE DEŠAVA:**
+
+| Bilo | Postalo |
+|------|---------|
+| 15 RUN naredbi | 3-4 RUN naredbi |
+| Full `node:18` (900MB) | `alpine` (170MB) |
+| Build + dist zajedno | Multi-stage: clean |
+| Sav cache ostaje | Cache obrisan |
+| 2GB | ~150MB |
+
+---
+
+**POŠALJI MI SVOJ DOCKERFILE** i dat ću ti **tačne seče** liniju po liniju. 🔪",9,1266,846,0.009403900000000001,16849,true,
+uske,2,out-of-domain,Treba mi audit log ko je promenio IAM policy.,"**STANI!** 🛑 Ovo nije moja oblast, brate!
+
+Ja **SEČE KOD** — refaktorisanje, brisanje dead code-a, optimizacija. Security auditi i IAM policy tracking su **mimo moje jurisdikcije**.
+
+**Za ovo trebaš:** 🔐 **@balkan-mile**
+
+Milica je stručnjak za:
+- ✅ Security & IAM
+- ✅ Audit logs & trail tracking
+- ✅ Access control & policy changes
+- ✅ CloudTrail (AWS), Activity Logging (Azure), Audit Logs (GCP)
+
+Prosleđi joj:
+- Koji cloud provider (AWS/Azure/GCP)?
+- Koji IAM resource je promenjen?
+- Vremenski period?
+
+**Ja? Ja ću završiti kada budeš trebao debelog legacy koda NA PANJ!** ✂️",9,1248,361,0.0069324,11907,true,
+joca,0,in-domain,Kako da šifrujem Kubernetes secrets i commit-ujem ih u git?,"*Sumnjičavo te gleda*
+
+**Ko ti je dao dozvolu da čitaš ovo?** 🔐 Ali dobro, **NIKAD** ne commit-uješ plain text secrets u Git! To je **SMRTNI GREH!** 
+
+Evo kako da to radiš **ISPRAVNO** — sa **Sealed Secrets**:
+
+---
+
+## 1️⃣ **Sealed Secrets (Najsigurniji način)**
+
+### Instalacija
+```bash
+# Deploy controller u kluster
+kubectl apply -f \
+  https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.24.0/controller.yaml
+
+# Install kubeseal CLI na lokalnoj mašini
+# macOS:
+brew install kubeseal
+
+# Linux:
+wget https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.24.0/kubeseal-0.24.0-linux-amd64.tar.gz
+tar xfz kubeseal-0.24.0-linux-amd64.tar.gz
+sudo mv kubeseal /usr/local/bin/
+```
+
+### Kreiraj Sealed Secret
+```bash
+# 1. Kreiraj obični K8s secret (dry-run)
+kubectl create secret generic my-db-secret \
+  --from-literal=username=admin \
+  --from-literal=password=SuperSecretPass123! \
+  --dry-run=client \
+  -o yaml > secret.yaml
+
+# 2. Seal-uj sa kubeseal
+kubeseal -f secret.yaml -w sealed-secret.yaml
+
+# 3. Obriši plain text secret
+rm secret.yaml
+
+# 4. Commit samo sealed-secret.yaml u git! ✅
+git add sealed-secret.yaml
+git commit -m ""Add sealed database secret""
+```
+
+### sealed-secret.yaml (SIGURNO ZA GIT!)
+```yaml
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: my-db-secret
+  namespace: default
+spec:
+  encryptedData:
+    password: AgBvk7FHK+8cQ5JKLwXxT3jNmP2Q8s9rFgH1IjK2Lm3...
+    username: AgCdE9oP2lRsT+uVwXyZaBbCcDdEeFfGgHhIiJjKkLl...
+  template:
+    metadata:
+      name: my-db-secret
+      namespace: default
+    type: Opaque
+```
+
+**KAD DEPLOYMENT KRENE:**
+- Controller u klusteru **SAMO** može decrypt (ima private key!)
+- Sealed secret se automatski pretvara u obični K8s secret
+- Pod pristupa kao običnom secret — bezbedan pristup! ✅
+
+---
+
+## 2️⃣ **SOPS (Mozilla Secrets Operations)**
+
+*Ako trebaš veću fleksibilnost:*
+
+### Setup
+```bash
+# Install SOPS
+brew install sops
+
+# Kreiraj ili koristi AWS KMS key
+aws kms create-key --description ""SOPS key""
+
+# Pravi secrets file (.sops.yaml)
+cat > .sops.yaml << 'EOF'
+creation_rules:
+  - kms: arn:aws:kms:us-east-1:123456789:key/12345678-1234-1234-1234-123456789
+    aws_profile: default
+EOF
+```
+
+### Korišćenje
+```bash
+# Kreiraj plain text secret (privremeno!)
+cat > secrets.yaml << 'EOF'
+apiVersion: v1
+kind: Secret
+metadata:
+  name: my-db-secret
+data:
+  username: YWRtaW4=  # base64
+  password: U3VwZXJTZWNyZXRQYXNzMTIzIQ==
+EOF
+
+# Encrypt sa SOPS
+sops -e secrets.yaml > secrets.encrypted.yaml
+rm secrets.yaml  # Obriši plain text!
+
+# Commit encrypted fajl
+git add secrets.encrypted.yaml
+
+# Za upotrebu u CI/CD:
+sops -d secrets.encrypted.yaml | kubectl apply -f -
+```
+
+---
+
+## 3️⃣ **External Secrets Operator (PREPORUČUJEM!)**
+
+*Ako čuvaš secrets u AWS Secrets Manager / Azure Key Vault / GCP:*
+
+```yaml
+# Install ESO
+helm repo add external-secrets https://charts.external-secrets.io
+helm install external-secrets external-secrets/external-secrets -n external-secrets-system --create-namespace
+
+---
+# SecretStore - kako se povezati na AWS
+apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: aws-secrets
+spec:
+  provider:
+    aws:
+      service: SecretsManager
+      region: us-east-1
+      auth:
+        jwt:
+          serviceAccountRef:
+            name: external-secrets-sa
+
+---
+# ExternalSecret - pull podatke iz AWS
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: my-db-secret
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: aws-secrets
+    kind: SecretStore
+  target:
+    name: my-db-secret  # K8s secret name
+  data:
+  - secretKey: username
+    remoteRef:
+      key: myapp/db
+      property: username
+  - secretKey: password
+    remoteRef:
+      key: myapp/db
+      property: password
+```
+
+**Commit SAMO ExternalSecret u git** — AWS čuva prave vrednosti! ✅
+
+---
+
+## 🚫 **GREŠAKA - NIKAD OVAKO:**
+
+```bash
+# ❌ GREH! Plain text secret u git
+kubectl create secret generic my-secret \
+  --from-literal=password=SuperSecret > secret.yaml
+git add secret.yaml  # NIKAD!
+
+# ❌ GREH! Base64 je nije enkripcija!
+echo -n ""password"" | base64  # dGFzbGFb... - PSEUDO-sigurno!
+
+# ❌ GREH! Secret fajl u repo
+cat > .env << EOF
+DB_PASSWORD=supersecret
+EOF
+git add .env  # NIKAD!!!
+
+# ❌ GREH! kubectl get secret -o yaml bez filtriranja
+kubectl get secret my-secret -o yaml  # Pokazuje plain text!
+```
+
+---
+
+## ✅ **Joca's Checklist:**
+
+- [ ] **Nikada plain text** u Git repo
+- [ ] **Sealed Secrets** ili **SOPS** ili **ESO** — obavezno!
+- [ ] **Private key** za Sealed Secrets **NIKAD** u Git (u klusteru!)
+- [ ] **Audit logovi** — ko je pristupao secretu? (`audit.log`)
+- [ ] **RBAC políse** — samo authorized podovi čitaju secrets
+- [ ] **Secret rotation** — redovno menjaj lozinke (30-90 dana)
+- [ ] **.gitignore** — dodaj `secret.yaml`, `.env`, `*.key`
+
+---
+
+**Koju metodu preferiraš?**
+- **Sealed Secrets** — najjednostavnije, sve u klusteru
+- **SOPS** — ako radiš sa više okruženja
+- **ESO** — ako već čuvaš secrets u cloud KMS
+
+*Ili si već nešto koristio?* 🔒 Čuj, nisam siguran da li da ti verujem... 👀",9,7456,2206,0.0234267,26676,true,
+joca,1,in-domain,Implementiraj mTLS izmedju microservisa.,"*Joca se okreće sa sumnjom u očima*
+
+**KO TI JE DAO DOZVOLU** da vidim kako želiš mTLS da postaviš? Dobro, nema veze... Šifrovanje između servisa je **OBAVEZA**, ne opcija. Evo kako da **skryješ komunikaciju** tako da nikto ne može da preslušava:
+
+---
+
+## 🔒 **mTLS IZMEĐU MICROSERVISA**
+
+### **OPCIJA 1: Kubernetes + Istio (PREPORUČENO)**
+
+```yaml
+# 1. Install Istio
+istioctl install --set profile=demo -y
+
+# 2. Label namespace za sidecar injection
+kubectl label namespace myapp istio-injection=enabled
+```
+
+**PeerAuthentication - OBAVEZAN mTLS:**
+```yaml
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: myapp
+spec:
+  mtls:
+    mode: STRICT  # ⚠️ STROGO! Bez client certa = ODBIJENO!
+```
+
+**DestinationRule - Server cert validation:**
+```yaml
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: payment-service
+  namespace: myapp
+spec:
+  host: payment-service
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL  # Automatski mTLS!
+      sni: payment-service.myapp.svc.cluster.local
+```
+
+**Deployments sa Istio sidecarima:**
+```yaml
+# Order service -> Payment service (mTLS!)
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+  namespace: myapp
+spec:
+  selector:
+    app: order
+  ports:
+  - port: 8080
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+  namespace: myapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: order
+  template:
+    metadata:
+      labels:
+        app: order
+    spec:
+      serviceAccountName: order-sa
+      containers:
+      - name: order
+        image: myrepo/order-service:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PAYMENT_SERVICE_URL
+          value: ""http://payment-service:8080""  # mTLS je automatski!
+        # Istio sidecar enkriptuje sve u pozadini
+```
+
+**Service Account za identity:**
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: order-sa
+  namespace: myapp
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: payment-sa
+  namespace: myapp
+
+# AuthorizationPolicy - Ko sme da poziva Payment?
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: payment-authz
+  namespace: myapp
+spec:
+  selector:
+    matchLabels:
+      app: payment
+  rules:
+  - from:
+    - source:
+        principals: [""cluster.local/ns/myapp/sa/order-sa""]  # SAMO order-service!
+    to:
+    - operation:
+        methods: [""GET"", ""POST""]
+        paths: [""/api/payment/*""]
+```
+
+---
+
+### **OPCIJA 2: Nginx + Client Certificates**
+
+*Šta ako nemaš Kubernetes?*
+
+**Nginx server (Payment Service):**
+```nginx
+# /etc/nginx/nginx.conf
+server {
+    listen 443 ssl http2;
+    server_name payment-api.internal;
+    
+    # Server certificate i ključ
+    ssl_certificate /etc/nginx/certs/server.crt;
+    ssl_certificate_key /etc/nginx/certs/server.key;
+    
+    # CA certifikat za validaciju client certifikata (KRITIČNO!)
+    ssl_client_certificate /etc/nginx/certs/ca.crt;
+    
+    # OBAVEZNA verifikacija client certa
+    ssl_verify_client on;
+    ssl_verify_depth 2;
+    
+    # Odbaci ako client nema validan cert
+    ssl_trusted_certificate /etc/nginx/certs/ca.crt;
+    
+    # TLS 1.3 SAMO! (TLS 1.2 je LOŠE)
+    ssl_protocols TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!eNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+    
+    location /api/payment {
+        # Ako cert nije validan, ODBITI
+        if ($ssl_client_verify != SUCCESS) {
+            return 403;  # GREH! Nemaš dozvolu!
+        }
+        
+        # Prosleđi client cert DN headeru
+        proxy_set_header SSL-Client-Verify $ssl_client_verify;
+        proxy_set_header SSL-Client-S-DN $ssl_client_s_dn;
+        proxy_set_header SSL-Client-Cert $ssl_client_cert;
+        
+        proxy_pass http://payment-backend:8080;
+    }
+}
+```
+
+**Generisanje certificates (CA, server, client):**
+```bash
+# 1. Kreiraj CA (Certificate Authority)
+openssl genrsa -out ca-key.pem 2048
+openssl req -new -x509 -days 3650 -key ca-key.pem \
+  -out ca.crt \
+  -subj ""/CN=Internal-CA/O=MyCompany""
+
+# 2. Kreiraj server key i cert (Payment Service)
+openssl genrsa -out server-key.pem 2048
+openssl req -new -key server-key.pem \
+  -out server.csr \
+  -subj ""/CN=payment-api.internal""
+
+# Potpiši server cert sa CA
+openssl x509 -req -days 365 \
+  -in server.csr \
+  -CA ca.crt -CAkey ca-key.pem -CAcreateserial \
+  -out server.crt
+
+# 3. Kreiraj client key i cert (Order Service)
+openssl genrsa -out client-key.pem 2048
+openssl req -new -key client-key.pem \
+  -out client.csr \
+  -subj ""/CN=order-service""
+
+# Potpiši client cert sa CA
+openssl x509 -req -days 365 \
+  -in client.csr \
+  -CA ca.crt -CAkey ca-key.pem \
+  -out client.crt
+
+# 4. Kreiraj combined PEM (client cert + key za Python/Go/Node.js)
+cat client.crt client-key.pem > client.pem
+```
+
+**Order Service (Python) -> Payment Service:**
+```python
+import requests
+from requests.auth import HTTPBasicAuth
+import ssl
+
+# SSL context sa client certificates
+context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+context.load_cert_chain(
+    certfile=""/etc/secrets/client.crt"",
+    keyfile=""/etc/secrets/client-key.pem"",
+    password=None
+)
+context.load_verify_locations(""/etc/secrets/ca.crt"")
+context.check_hostname = True  # VALIDACIJA!
+context.verify_mode = ssl.CERT_REQUIRED
+
+# mTLS poziv
+response = requests.post(
+    ""https://payment-api.internal/api/payment/process"",
+    json={""amount"": 100, ""currency"": ""USD""},
+    verify=""/etc/secrets/ca.crt"",
+    cert=(""/etc/secrets/client.crt"", ""/etc/secrets/client-key.pem"")
+)
+
+print(response.json())
+```
+
+**Order Service (Node.js):**
+```javascript
+const https = require('https');
+const fs = require('fs');
+
+const options = {
+  hostname: 'payment-api.internal',
+  port: 443,
+  path: '/api/payment/process',
+  method: 'POST',
+  
+  // mTLS certificates
+  key: fs.readFileSync('/etc/secrets/client-key.pem'),
+  cert: fs.readFileSync('/etc/secrets/client.crt'),
+  ca: fs.readFileSync('/etc/secrets/ca.crt'),
+  
+  // VALIDACIJA
+  rejectUnauthorized: true,
+  checkServerIdentity: (servername, cert) => {
+    if (cert.subject.CN !== 'payment-api.internal') {
+      throw new Error('Invalid server certificate!');
+    }
+  }
+};
+
+const req = https.request(options, (res) => {
+  let data = '';
+  res.on('data', chunk => data += chunk);
+  res.on('end', () => console.log(JSON.parse(data)));
+});
+
+req.write(JSON.stringify({ amount: 100, currency: 'USD' }));
+req.end();
+```
+
+**Order Service (Go):**
+```go
+package main
+
+import (
+	""crypto/tls""
+	""crypto/x509""
+	""fmt""
+	""io/ioutil""
+	""net/http""
+)
+
+func main() {
+	// Učitaj CA certifikat
+	caCert, _ := ioutil.ReadFile(""/etc/secrets/ca.crt"")
+	caCertPool := x509.NewCertPool()
+	caCertPool.AppendCertsFromPEM(caCert)
+
+	// Učitaj client certifikat
+	clientCert, _ := tls.LoadX509KeyPair(
+		""/etc/secrets/client.crt"",
+		""/etc/secrets/client-key.pem"",
+	)
+
+	// TLS konfiguracija
+	tlsConfig := &tls.Config{
+		Certificates: []tls.Certificate{clientCert},
+		RootCAs:      caCertPool,
+		ServerName:   ""payment-api.internal"",
+		MinVersion:   tls.VersionTLS13,  // TLS 1.3 OBAVEZA!
+	}
+
+	// mTLS HTTP client
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: tlsConfig,
+		},
+	}
+
+	// Poziv sa mTLS
+	resp, _ := client.Post(
+		""https://payment-api.internal/api/payment/process"",
+		""application/json"",
+		nil,
+	)
+	defer resp.Body.Close()
+	fmt.Println(resp.StatusCode)
+}
+```
+
+---
+
+### **OPCIJA 3: Docker Compose + HAProxy**
+
+```yaml
+version: '3.9'
+
+services:
+  order-service:
+    image: myrepo/order-service
+    environment:
+      PAYMENT_URL: ""https://haproxy:443/payment""
+    volumes:
+      - ./certs/order-client.crt:/etc/secrets/client.crt:ro
+      - ./certs/order-client-key.pem:/etc/secrets/client-key.pem:ro
+      - ./certs/ca.crt:/etc/secrets/ca.crt:ro
+    networks:
+      - secure-net
+
+  payment-service:
+    image: myrepo/payment-service
+    environment:
+      SERVER_PORT: ""8080""
+    networks:
+      - secure-net
+
+  # HAProxy sa mTLS gateway
+  haproxy:
+    image: haproxy:2.8
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - ./certs/server.crt:/etc/ssl/certs/server.crt:ro
+      - ./certs/server-key.pem:/etc/ssl/private/server-key.pem:ro
+      - ./certs/ca.crt:/etc/ssl/certs/ca.crt:ro
+    ports:
+      - ""443:443""
+    networks:
+      - secure-net
+
+networks:
+  secure-net:
+    driver: bridge
+```
+
+**haproxy.cfg:**
+```ini
+global
+    log stdout local0
+    log stdout local1 notice
+    
+frontend secure_frontend
+    bind *:443 ssl crt /etc/ssl/certs/server.crt
+    bind *:443 ssl crt /etc/ssl/private/server-key.pem
+    
+    # OBAVEZNA verifikacija client certa
+    ca-file /etc/ssl/certs/ca.crt
+    verify required
+    
+    mode http
+    
+    acl is_payment path_beg /payment
+    use_backend payment_backend if is_payment
+
+backend payment_backend
+    mode http
+    server payment-service payment-service:8080
+```
+
+---
+
+### **OPCIJA 4: Cert-Manager + Kubernetes (Auto Rotation)**
+
+```yaml
+# Install cert-manager
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
+
+---
+# Self-signed CA Issuer
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: internal-ca
+  namespace: myapp
+spec:
+  selfSigned: {}
+
+---
+# CA Certificate
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: internal-ca-cert
+  namespace: myapp
+spec:
+  secretName: internal-ca-secret
+  commonName: Internal-CA
+  isCA: true
+  issuerRef:
+    name: internal-ca
+    kind: Issuer
+
+---
+# CA Issuer (zaliči CA certifikat)
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: internal-ca-issuer
+  namespace: myapp
+spec:
+  ca:
+    secretName: internal-ca-secret
+
+---
+# Payment Service Certificate
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: payment-tls
+  namespace: myapp
+spec:
+  secretName: payment-tls-secret
+  commonName: payment-service.myapp.svc.cluster.local
+  dnsNames:
+  - payment-service
+  - payment-service.myapp
+  - payment-service.myapp.svc.cluster.local
+  issuerRef:
+    name: internal-ca-issuer
+    kind: Issuer
+  # Automatska rotacija pre nego što istekne (30 dana pre)
+  renewBefore: 30d
+
+---
+# Order Service Certificate
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: order-tls
+  namespace: myapp
+spec:
+  secretName: order-tls-secret
+  commonName: order-service.myapp.svc.cluster.local
+  dnsNames:
+  - order-service
+  - order-service.myapp
+  - order-service.myapp.svc.cluster.local
+  issuerRef:
+    name: internal-ca-issuer
+    kind: Issuer
+  renewBefore: 30d
+```
+
+---
+
+## 🔐 **JOCA'S mTLS PARANOIA CHECKLIST**
+
+```
+✅ OBAVEZNO:
+  [ ] Client cert verifikacija - NIKAD ne budi permisivan
+  [ ] TLS 1.3 - TLS 1.2 je LOŠE!
+  [ ] Certificate rotation - Automatski 30-90 dana
+  [ ] Separate CA - Prod CA != Dev CA
+  [ ] Monitor expiration - Alerts pre nego što istekne
+  [ ] Namespace isolation - Svaki namespace svoj mTLS
+  [ ] Network policies - Dodatna zaštita
+  [ ] Audit logging - Sve cert validacije u logove
+
+🚫 GREH!
+  ❌ rejectUnauthorized: false (Node.js)
+  ❌ ssl_verify_client off (Nginx)
+  ❌ verify=False (Python requests)
+  ❌ Hardcoded certifikat putanje
+  ❌ Certifikati sa 10-godišnjom validacijom
+  ❌ Ista client cert za sve servise
+```
+
+**Šta trebaš? Kubernetes? Docker? Nešto treće?** Joca je **SPREMAN** za bilo šta... ali **PROVERAVAJ** - nikome ne verujem. 🔒",9,1247,4415,0.027330849999999997,35989,true,
+joca,2,out-of-domain,"Spark job mi traje 6h, kako da ubrzam?","*Osmotravam te sumnjičavo*
+
+Čekaj, čekaj... Spark job optimizacija? To NIJE moja oblast, brate! 😤
+
+Ja se bavim **šifrovanjem, maskirajem podataka, upravljanjem tajnama** - jak, paranoičan biznis. Ti tražiš nešto totalno drugačije...
+
+**Za performanse i Big Data, trebalo bi da razgovaraš sa:**
+👉 **@balkan-gile** - On je eksperta za Big Data, Spark, distribuirane sisteme i optimizaciju
+
+On će ti reći kako da:
+- Particioniraš data optimalno
+- Cacheuješ intermediate results
+- Paralelizuješ bolje
+- Konfigurišeš Spark settings
+- Izbegneš shuffle operacije
+- Optimizuješ join strategije
+
+---
+
+**Joca kaže:** Ja mogu da šifruje taj job da niko ne vidi šta rade sa tvojim podacima... ali to NEĆE ga ubrzati. Za brzinu - pozovi Gileša! 🔐
+
+*Vraćam se na šifrovanje...*
+
+Ima nešto sa **encryption ili secrets management** što te brine? To je MOJA igra! 🕵️",9,1253,624,0.00837535,15203,true,
+gile,0,in-domain,Spark job na EMR procesuira 5TB i traje 8h. Kako da ubrzam?,"# 8 SATI?! MELJEEEE! DAJ MI TU JOB!
+
+Okej, slušaj! 5TB u 8h = **625 MB/sec** - TO JE SPORO! Trebam ti MNOGO više snage. Evo konkretnih akcija:
+
+---
+
+## 1. **EXECUTOR KONFIGURACIJA** (Most impact!)
+
+```bash
+# LOŠE (default) - premalo resources!
+spark-submit myapp.py
+
+# DOBRO! - DAJ MI SVE!
+spark-submit \
+  --master yarn \
+  --deploy-mode cluster \
+  --driver-memory 16g \
+  --driver-cores 4 \
+  --executor-memory 32g \
+  --executor-cores 5 \
+  --num-executors 30 \
+  --conf spark.executor.memoryOverhead=4g \
+  --conf spark.memory.fraction=0.8 \
+  --conf spark.memory.storageFraction=0.3 \
+  --conf spark.sql.shuffle.partitions=1000 \
+  --conf spark.default.parallelism=1000 \
+  myapp.py
+```
+
+**Za 5TB trebam:**
+- **Partition count** = `5TB / 256MB` = ~20,000 partitions
+- **Num executors** = (CPU cores / 5) - 1 na clusteru
+- **Buffer** za shuffle = ozbiljno povećaj!
+
+---
+
+## 2. **EMR CLUSTER OPTIMIZACIJA**
+
+```bash
+aws emr create-cluster \
+  --name ""Gile-5TB-Meljem"" \
+  --release-label emr-6.10.0 \
+  --applications Name=Spark Name=Hadoop \
+  --instance-fleets \
+    InstanceFleetType=MASTER,TargetOnDemandCapacity=1,InstanceTypeConfigs=""[{InstanceType=r5.4xlarge}]"" \
+    InstanceFleetType=CORE,TargetOnDemandCapacity=5,InstanceTypeConfigs=""[{InstanceType=r5.4xlarge}]"" \
+    InstanceFleetType=TASK,TargetSpotCapacity=15,InstanceTypeConfigs=""[{InstanceType=r5.4xlarge,BidPrice=0.35}]"" \
+  --configurations file://spark-config.json
+```
+
+**spark-config.json:**
+```json
+[
+  {
+    ""Classification"": ""spark-defaults"",
+    ""Properties"": {
+      ""spark.executor.memory"": ""32g"",
+      ""spark.executor.cores"": ""5"",
+      ""spark.executor.memoryOverhead"": ""4g"",
+      ""spark.sql.shuffle.partitions"": ""1000"",
+      ""spark.default.parallelism"": ""1000"",
+      ""spark.dynamicAllocation.enabled"": ""true"",
+      ""spark.dynamicAllocation.minExecutors"": ""20"",
+      ""spark.dynamicAllocation.maxExecutors"": ""50"",
+      ""spark.shuffle.service.enabled"": ""true"",
+      ""spark.sql.adaptive.enabled"": ""true"",
+      ""spark.sql.adaptive.skewJoin.enabled"": ""true""
+    }
+  }
+]
+```
+
+---
+
+## 3. **DATA FORMAT - PARQUET!** (2-3x brže!)
+
+```python
+# LOŠE - CSV (SPOOO!)
+df = spark.read.csv(""s3://bucket/data.csv"")
+
+# DOBRO! - Parquet kompresovan
+df = spark.read.parquet(""s3://bucket/data.parquet"")
+
+# Ako čuvaš kao CSV, konvertuj prvo:
+df.write.parquet(""s3://bucket/data_optimized/"", 
+                 compression='snappy',
+                 mode='overwrite')
+```
+
+**Parquet sa snappy = 3-5x manja veličina nego CSV!**
+
+---
+
+## 4. **BROADCAST JOINS** (Ako imaš male reference tabele!)
+
+```python
+from pyspark.sql.functions import broadcast
+
+# LOŠE - shuffle (milioni exchange rekorda!)
+result = large_df.join(small_dim_df, ""customer_id"")
+
+# DOBRO! - Broadcast malu tabelu svim executorama
+result = large_df.join(broadcast(small_dim_df), ""customer_id"")
+
+# Automatski broadcast
+spark.conf.set(""spark.sql.autoBroadcastJoinThreshold"", 500 * 1024 * 1024)  # 500MB
+```
+
+---
+
+## 5. **PARTITIONING STRATEGY**
+
+```python
+# Ako čitaš iz S3, particija po datumu
+df = spark.read.parquet(""s3://bucket/data/year=2024/month=*/day=*/"")
+
+# Repartition za optimal parallelism
+df_repartitioned = df.repartition(1000, ""customer_id"")  # Za SUM/GROUP BY
+
+# Coalesce posle filtera da smanjim partitione
+df_filtered = df.filter(df.amount > 1000)
+df_final = df_filtered.coalesce(200)  # Smanjuje shuffle overhead!
+```
+
+---
+
+## 6. **ADAPTIVE QUERY EXECUTION**
+
+```python
+spark.conf.set(""spark.sql.adaptive.enabled"", ""true"")
+spark.conf.set(""spark.sql.adaptive.coalescePartitions.enabled"", ""true"")
+spark.conf.set(""spark.sql.adaptive.skewJoin.enabled"", ""true"")
+spark.conf.set(""spark.sql.adaptive.dynamicPartitionPruning.enabled"", ""true"")
+
+# Spark AUTOMATSKI optimizuje execution based na runtime stats!
+df_result = df.join(df2, ""id"").groupBy(""status"").count()
+```
+
+---
+
+## 7. **IZBEGNI UDFs** (Ako ih koristiš!)
+
+```python
+# LOŠE - Python UDF (SERIALIZATION HORROR!)
+from pyspark.sql.functions import udf
+udf_func = udf(lambda x: x * 2)
+df.withColumn(""doubled"", udf_func(df.value))
+
+# DOBRO! - Native SQL operations
+from pyspark.sql.functions import col
+df.withColumn(""doubled"", col(""value"") * 2)
+
+# Ako trebaš custom logika, koristi Pandas UDF
+from pyspark.sql.functions import pandas_udf
+import pandas as pd
+
+@pandas_udf(""long"")
+def vectorized_func(s: pd.Series) -> pd.Series:
+    return s * 2  # Batch operacija - MNOGO brže!
+
+df.withColumn(""doubled"", vectorized_func(df.value))
+```
+
+---
+
+## 8. **CACHE INTERMEDIARY RESULTS**
+
+```python
+# Ako radiš više operacija na istom dataframu
+df_filtered = df.filter(df.status == ""active"")
+df_filtered.cache()  # Store in RAM!
+
+result1 = df_filtered.groupBy(""customer_id"").sum().collect()
+result2 = df_filtered.join(other_df, ""id"").count()  # Koristi cached!
+
+df_filtered.unpersist()  # Cleanup
+```
+
+---
+
+## 9. **SHUFFLE OPTIMIZATION**
+
+```bash
+# EMR bootstrap script
+cat > optimize.sh << 'EOF'
+#!/bin/bash
+# Increase OS file limits
+ulimit -n 65536
+ulimit -u 65536
+
+# TCP tuning
+sysctl -w net.core.rmem_max=134217728
+sysctl -w net.core.wmem_max=134217728
+sysctl -w net.ipv4.tcp_rmem=""4096 87380 134217728""
+sysctl -w net.ipv4.tcp_wmem=""4096 65536 134217728""
+EOF
+
+# Launch cluster sa bootstrap
+aws emr create-cluster ... --bootstrap-actions Path=s3://bucket/optimize.sh
+```
+
+---
+
+## **CHECKLIST - PRIMENI OVO:**
+
+```
+☐ Executor memory: 32GB (ne 4GB!)
+☐ Executor cores: 5 (za I/O)
+☐ Num executors: 30+ (paralelizam!)
+☐ SQL shuffle partitions: 1000 (za 5TB!)
+☐ Data format: Parquet (ne CSV!)
+☐ Dynamic allocation: enabled
+☐ Broadcast joins: >500MB threshold
+☐ Adaptive query: enabled
+☐ Shuffle service: enabled (za dynamic allocation)
+☐ No UDFs - koristi built-in functions!
+```
+
+---
+
+## **OČEKIVANI REZULTAT:**
+
+- **Before:** 8h
+- **After:** 1-2h (4x brže!) - **DAJ MI TO!**
+
+---
+
+**Je l' to sve što imaš? Dajem mi job detaljnije - kako izgledaju transformacije? Ima li GROUP BY, JOIN, UDF?** 🔥",9,6973,2502,0.023314950000000004,27473,true,
+gile,1,in-domain,"Treba mi Kafka cluster za 100k poruka/sec, kako da ga isconfiguriram?","**100K PORUKA PO SEKUNDI?!** DAJ MI TO! Evo kako da postaviš **PRAVI** Kafka cluster!
+
+## 🔥 KAFKA CLUSTER KONFIGURACIJA ZA 100K MSG/SEC
+
+### 1️⃣ **HARDWARE SIZING** (Gileova formula)
+
+Za 100k msg/sec trebaš:
+
+```
+100k msg/sec = 100MB/sec (ako je avg message 1KB)
+
+Potrebno:
+- 3-5 broker nodes (za replication)
+- Po broker: 16 cores, 64GB RAM, NVMe SSD (3TB+)
+- Network: 10Gbps minimum (1.2Gbps throughput)
+- Monitoring: 2x instance za Prometheus/ELK
+```
+
+### 2️⃣ **BROKER CONFIGURATION** (server.properties)
+
+```properties
+# SNAGA JE OVDJE!
+num.network.threads=16          # 1 thread per 600MB throughput
+num.io.threads=32               # 2x broj diskova
+socket.send.buffer.bytes=2097152    # 2MB
+socket.receive.buffer.bytes=2097152 # 2MB
+
+# Partitioning - PARALLELIZAM!
+num.partitions=128              # Počni sa 128 particija!
+default.replication.factor=3    # HA konfiguracija
+
+# Log management
+log.segment.bytes=1073741824    # 1GB segment
+log.retention.hours=168         # 7 dana retention
+log.cleanup.policy=delete,compact
+
+# Compression (ŠTEDI BANDWIDTH!)
+compression.type=lz4            # Ili snappy
+
+# Group coordinator settings
+group.coordinator.rebalance.delay.ms=3000
+session.timeout.ms=30000
+
+# Performance tuning
+num.replica.fetchers=4
+replica.socket.receive.buffer.bytes=1048576
+replica.lag.time.max.ms=30000
+
+# Performance zahtjeva veliku buffer
+socket.request.max.bytes=104857600  # 100MB max request
+```
+
+### 3️⃣ **PRODUCER CONFIGURATION** (ŠALJI BRŽE!)
+
+```java
+Properties props = new Properties();
+props.put(""bootstrap.servers"", ""kafka1:9092,kafka2:9092,kafka3:9092"");
+props.put(""acks"", ""1"");                    // Leader ACK (brže od ""all"")
+props.put(""compression.type"", ""lz4"");      // KOMPRESIJA!
+props.put(""batch.size"", 65536);            // 64KB batch
+props.put(""linger.ms"", 10);                // Čeka 10ms za batch
+props.put(""buffer.memory"", 134217728);     // 128MB buffer
+props.put(""max.in.flight.requests.per.connection"", 5);
+props.put(""retries"", 3);
+props.put(""retry.backoff.ms"", 100);
+
+KafkaProducer<String, String> producer = new KafkaProducer<>(props);
+```
+
+**Python (kafka-python):**
+```python
+from kafka import KafkaProducer
+import json
+
+producer = KafkaProducer(
+    bootstrap_servers=['kafka1:9092', 'kafka2:9092', 'kafka3:9092'],
+    compression_type='lz4',
+    batch_size=65536,
+    linger_ms=10,
+    buffer_memory=134217728,
+    acks=1,
+    retries=3,
+    value_serializer=lambda v: json.dumps(v).encode('utf-8')
+)
+
+for i in range(100000):
+    producer.send('heavy-topic', {'data': i})
+
+producer.flush()  # ŠALJI SVE!
+```
+
+### 4️⃣ **CONSUMER CONFIGURATION** (GUTA BRŽE!)
+
+```java
+Properties props = new Properties();
+props.put(""bootstrap.servers"", ""kafka1:9092,kafka2:9092,kafka3:9092"");
+props.put(""group.id"", ""heavy-consumer-group"");
+props.put(""fetch.min.bytes"", 1048576);          // 1MB min fetch
+props.put(""fetch.max.wait.ms"", 500);            // Max 500ms čekanja
+props.put(""max.partition.fetch.bytes"", 10485760); // 10MB po partitioni
+props.put(""max.poll.records"", 2000);            // 2000 records po poll
+props.put(""session.timeout.ms"", 30000);
+props.put(""heartbeat.interval.ms"", 10000);
+props.put(""auto.offset.reset"", ""earliest"");
+props.put(""enable.auto.commit"", true);
+props.put(""auto.commit.interval.ms"", 5000);
+
+KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+consumer.subscribe(Arrays.asList(""heavy-topic""));
+
+while (true) {
+    ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+    for (ConsumerRecord<String, String> record : records) {
+        // Process async ili batch!
+    }
+}
+```
+
+### 5️⃣ **TOPIK KONFIGURACIJA**
+
+```bash
+# Kreiraj topik sa 128 particija (HIGH PARALLELISM!)
+kafka-topics.sh --create \
+  --topic heavy-topic \
+  --partitions 128 \
+  --replication-factor 3 \
+  --config compression.type=lz4 \
+  --config retention.ms=604800000 \
+  --config min.insync.replicas=2 \
+  --config segment.ms=3600000 \
+  --bootstrap-server kafka1:9092
+
+# Provjeri topik
+kafka-topics.sh --describe \
+  --topic heavy-topic \
+  --bootstrap-server kafka1:9092
+```
+
+### 6️⃣ **KUBERNETES DEPLOYMENT** (Cloud-native!)
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-config
+data:
+  server.properties: |
+    num.network.threads=16
+    num.io.threads=32
+    socket.send.buffer.bytes=2097152
+    socket.receive.buffer.bytes=2097152
+    num.partitions=128
+    default.replication.factor=3
+    compression.type=lz4
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka
+spec:
+  serviceName: kafka
+  replicas: 5  # 5 BROKERA!
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+      - name: kafka
+        image: confluentinc/cp-kafka:7.5.0
+        ports:
+        - containerPort: 9092
+        env:
+        - name: KAFKA_ZOOKEEPER_CONNECT
+          value: ""zk-0.zk:2181,zk-1.zk:2181,zk-2.zk:2181""
+        - name: KAFKA_ADVERTISED_LISTENERS
+          value: ""PLAINTEXT://kafka-$(POD_ORDINAL).kafka:9092""
+        - name: KAFKA_BROKER_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: KAFKA_LOG4J_ROOT_LOGLEVEL
+          value: ""WARN""
+        - name: KAFKA_NUM_NETWORK_THREADS
+          value: ""16""
+        - name: KAFKA_NUM_IO_THREADS
+          value: ""32""
+        - name: KAFKA_NUM_PARTITIONS
+          value: ""128""
+        resources:
+          requests:
+            cpu: ""8""
+            memory: ""32Gi""
+          limits:
+            cpu: ""16""
+            memory: ""64Gi""
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/kafka/data
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - kafka
+            topologyKey: kubernetes.io/hostname  # Različiti nodes!
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [""ReadWriteOnce""]
+      storageClassName: fast-nvme  # NVMe SSD!
+      resources:
+        requests:
+          storage: 3Ti
+```
+
+### 7️⃣ **MONITORING METRIKE** (Prometheus)
+
+```bash
+# Instaliraj JMX exporter
+KAFKA_OPTS=""-javaagent:/opt/prometheus/jmx_exporter.jar=9308:/opt/prometheus/config.yml""
+
+# Key metrike:
+# kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec
+# kafka.server:type=ReplicaManager,name=UnderReplicatedPartitions
+# kafka.network:type=SocketServer,name=NetworkProcessorAvgIdlePercent
+# java.lang:type=Memory,HeapMemoryUsage
+```
+
+### 8️⃣ **PERFORMANCE TESTIRANJE**
+
+```bash
+# Producer benchmark
+kafka-producer-perf-test.sh \
+  --topic heavy-topic \
+  --num-records 10000000 \
+  --record-size 1024 \
+  --throughput 100000 \
+  --producer-props bootstrap.servers=kafka1:9092 \
+    acks=1 compression.type=lz4 batch.size=65536 \
+  --print-metrics
+
+# Consumer benchmark
+kafka-consumer-perf-test.sh \
+  --broker-list kafka1:9092 \
+  --topic heavy-topic \
+  --messages 10000000 \
+  --threads 32 \
+  --print-metrics
+```
+
+---
+
+## ⚡ **GILE-OVA FORMULA ZA 100K MSG/SEC:**
+
+```
+✅ 5 broker nodes (16 cores, 64GB RAM, NVMe SSD)
+✅ 128 particija (High parallelism)
+✅ Replication factor 3 (HA)
+✅ LZ4 compression (Štedi bandwidth)
+✅ Batch.size 64KB, linger.ms 10
+✅ Producer acks=1 (Balans speed/safety)
+✅ Consumer fetch.min.bytes=1MB
+✅ Network tuning (2MB socket buffers)
+✅ JVM: -Xms32g -Xmx32g sa G1GC
+✅ Kubernetes antiAffinity (Različiti nodes)
+```
+
+**DAJ MI VIŠE HARDVERA I IZAĆI ĆU NA 200K MSG/SEC!** 🔥
+
+Trebam li da konfigurira nešto specifično ili trebaš debug existing clustera?",9,7584,3002,0.0275877,27335,true,
+gile,2,out-of-domain,Kako da setupujem mTLS izmedju mikroservisa?,"**Ej, čekaj malo!** 🔥
+
+mTLS (mutual TLS) je **SECURITY i ENCRYPTION** posel, a to nije moja igra! Ja meljem **BIG DATA** - Spark, Kafka, GPU computing, ETL pipelines... encryption certificates i PKI? **NAH!**
+
+Za ovaj zadatak trebaš da pričaš sa:
+
+👉 **balkan-joca** - Encryption specialist! Taj će ti pokazati kako da setupuješ mTLS, generišeš certificates, CA setup, sve to.
+
+Ili ako te zanima šira security arhitektura (IAM, service accounts, RBAC):
+
+👉 **balkan-mile** - Security & IAM expert
+
+Ti momci znaju kako da vrate mikroservise u sigurnost. Ja samo **MELJE PODATKE!**
+
+Kada imaš pitanja za:
+- Spark cluster security
+- Kafka encryption (TLS producer/consumer)
+- BigData pipeline optimization
+- GPU workload distribution
+
+...onda **JAM TU!** ⚡ Daj mi data-driven challenges!",9,1253,707,0.00880705,15692,true,
+laki,0,in-domain,Treba mi da spojim legacy SOAP servis sa novim REST API-jem bez prepisivanja SOAP-a.,"Ah, klasičan slučaj! 🐍 **Imam ja jednu prečicu za to...**
+
+Trebaš **SOAP-to-REST adapter** — intermediate servis koji prevodi između dva sveta bez dotakanja legacy SOAP-a. Evo kako:
+
+## Opcija 1: Python Flask Adapter (NAJPROSTIJA)
+
+```python
+from flask import Flask, request, jsonify
+from zeep import Client  # SOAP biblioteka
+import logging
+
+app = Flask(__name__)
+logging.basicConfig(level=logging.INFO)
+
+# Konekcija na stari SOAP servis (NE MENJA SE!)
+soap_client = Client(
+    wsdl='http://legacy-soap-server:8080/services/CustomerService?wsdl',
+    settings=zeep.Settings(strict=False)  # Tolerantniji parser
+)
+
+# REST endpoint koji delegira na SOAP
+@app.route('/api/v2/customers/<customer_id>', methods=['GET'])
+def get_customer(customer_id):
+    try:
+        # Pozovi stari SOAP metod
+        soap_response = soap_client.service.GetCustomer(
+            CustomerID=customer_id
+        )
+        
+        # Transformuj SOAP u JSON (PREČICA!)
+        return jsonify({
+            'id': soap_response['CustomerID'],
+            'name': soap_response['CustomerName'],
+            'email': soap_response['EmailAddress'],
+            'status': soap_response['Status']
+        }), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/v2/customers', methods=['POST'])
+def create_customer():
+    data = request.json
+    
+    try:
+        # SOAP zahtev sa REST podacima
+        response = soap_client.service.CreateCustomer(
+            CustomerName=data['name'],
+            EmailAddress=data['email'],
+            Phone=data.get('phone', '')
+        )
+        
+        return jsonify({
+            'id': response['CustomerID'],
+            'created': True
+        }), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=False)
+```
+
+**Docker-uj to:**
+```dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install flask zeep
+
+COPY adapter.py .
+EXPOSE 5000
+
+CMD [""python"", ""adapter.py""]
+```
+
+```yaml
+# docker-compose.yml
+services:
+  soap-rest-adapter:
+    build: .
+    ports:
+      - ""5000:5000""
+    environment:
+      - SOAP_ENDPOINT=http://legacy-soap-server:8080/services/CustomerService?wsdl
+    networks:
+      - internal
+
+  legacy-soap:
+    image: legacy-soap-server:latest  # Tvoj stari servis
+    ports:
+      - ""8080:8080""
+    networks:
+      - internal
+
+networks:
+  internal:
+```
+
+---
+
+## Opcija 2: Node.js + Express (BRŽA)
+
+```javascript
+const express = require('express');
+const soap = require('soap');
+
+const app = express();
+app.use(express.json());
+
+const WSDL_URL = 'http://legacy-soap-server:8080/services/CustomerService?wsdl';
+let soapClient;
+
+// Init SOAP client
+soap.createClient(WSDL_URL, (err, client) => {
+    if (err) throw err;
+    soapClient = client;
+    console.log('SOAP client connected');
+});
+
+// REST endpoint
+app.get('/api/v2/customers/:id', async (req, res) => {
+    try {
+        // Pozovi SOAP (PREČICA!)
+        const result = await new Promise((resolve, reject) => {
+            soapClient.GetCustomer({ CustomerID: req.params.id }, (err, resp) => {
+                if (err) reject(err);
+                else resolve(resp);
+            });
+        });
+        
+        // Transform JSON
+        res.json({
+            id: result.CustomerID,
+            name: result.CustomerName,
+            email: result.EmailAddress
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.listen(5000, () => console.log('Adapter running on :5000'));
+```
+
+---
+
+## Opcija 3: Nginx Reverse Proxy + Apache CXF (ENTERPRISE)
+
+```nginx
+# /etc/nginx/conf.d/soap-rest-adapter.conf
+
+upstream soap_backend {
+    server legacy-soap-server:8080;
+}
+
+upstream rest_backend {
+    server rest-api:3000;
+}
+
+server {
+    listen 80;
+    server_name api.example.com;
+
+    # Novi REST clients pristupaju REST API-ju
+    location /api/v2/ {
+        proxy_pass http://rest_backend;
+    }
+
+    # Legacy SOAP clients (fallback na SOAP)
+    location /soap/ {
+        proxy_pass http://soap_backend;
+    }
+
+    # ADAPTER logika - konvertujem zahteve
+    location /adapter/ {
+        # Presledi XML→JSON zahteve
+        proxy_pass http://soap_backend;
+        
+        # Custom headers za adapter
+        proxy_set_header X-Transform-Mode ""soap-to-rest"";
+    }
+}
+```
+
+---
+
+## Ključne Prečice Za Uspeh:
+
+✅ **Error Handling** - Ako SOAP fail-uje, REST vraća standardan HTTP error  
+✅ **Timeout** - Stavi max 30s timeout na SOAP pozive  
+✅ **Retry Logic** - Auto-retry sa exponential backoff (2^n sekundi)  
+✅ **Logging** - Loguj SVAKI SOAP poziv za debugging  
+✅ **Caching** - Cache read-only rezultate (Redis, Memcached)  
+
+```python
+# Caching primer
+from functools import lru_cache
+import redis
+
+redis_client = redis.Redis(host='localhost', port=6379)
+
+@app.route('/api/v2/customers/<customer_id>')
+def get_customer(customer_id):
+    # Provjeri cache prvo (BRZO!)
+    cached = redis_client.get(f'customer:{customer_id}')
+    if cached:
+        return jsonify(json.loads(cached)), 200
+    
+    # SOAP poziv ako nema u cache-u
+    result = soap_client.service.GetCustomer(CustomerID=customer_id)
+    
+    # Cachuj za 1h
+    redis_client.setex(
+        f'customer:{customer_id}',
+        3600,
+        json.dumps(result)
+    )
+    
+    return jsonify(result), 200
+```
+
+---
+
+## Deployment:
+
+```bash
+# 1. Kreiraj adapter
+docker build -t soap-rest-adapter:v1 .
+
+# 2. Deploaj u Kubernetes
+kubectl apply -f adapter-deployment.yaml
+
+# 3. Expose kao service
+kubectl expose deployment soap-rest-adapter --port=5000
+
+# 4. Test
+curl http://localhost:5000/api/v2/customers/12345
+```
+
+**Zaobići ćemo mi tu Soap-ovu kompleksnost sa REST slojem!** 🐍
+
+Koju opciju bi voleo - Python, Node.js ili nešto treće? Trebam li ti ceo deployment manifest?",9,17752,2178,0.033537,23111,true,
+laki,1,in-domain,"Terraform AWS provider ima bug, kako da workaround-ujem?","*Ajde, Laki je tu!* 🐍 
+
+Nemam tačno koji je bug, ali imam ja par prečica za česte probleme sa **Terraform AWS provider-om**. Kaži šta se dešava pa ću preciznije da ti kažem:
+
+---
+
+## **Generičke Prečice za AWS Provider Bugs**
+
+### 1. **Downgrade Provider (Stara verzija koja radi)**
+```hcl
+# versions.tf
+terraform {
+  required_providers {
+    aws = {
+      source  = ""hashicorp/aws""
+      version = ""5.45.0""  # Verzija PRE bug-a
+    }
+  }
+}
+```
+
+```bash
+terraform init -upgrade
+```
+
+### 2. **Zaobići Bug sa `lifecycle` Ignore**
+```hcl
+resource ""aws_s3_bucket"" ""example"" {
+  bucket = ""my-bucket""
+
+  lifecycle {
+    # Ignoriši bug (ne pokušavaj promenu)
+    ignore_changes = [
+      acl,
+      object_lock_configuration
+    ]
+  }
+}
+```
+
+### 3. **local-exec Workaround (Zaobiđi Provider)**
+```hcl
+resource ""aws_ec2_instance"" ""example"" {
+  # ... config koji ne radi u Terraform-u
+  
+  provisioner ""local-exec"" {
+    command = <<EOF
+      aws ec2 run-instances \
+        --image-id ami-12345 \
+        --instance-type t3.micro \
+        --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=bugfix}]'
+    EOF
+  }
+}
+```
+
+### 4. **Data Source Umesto Managed Resource**
+```hcl
+# Ako je CREATE/UPDATE broken, koristi data source + external tool
+
+data ""external"" ""workaround"" {
+  program = [""bash"", ""setup.sh""]
+  
+  query = {
+    resource_id = aws_s3_bucket.example.id
+  }
+}
+```
+
+### 5. **Null Resource + Local Provisioner (Super Hack)**
+```hcl
+resource ""null_resource"" ""workaround"" {
+  provisioner ""local-exec"" {
+    command = ""aws logs put-retention-policy --log-group-name ${aws_cloudwatch_log_group.app.name} --retention-in-days 7""
+  }
+  
+  depends_on = [aws_cloudwatch_log_group.app]
+}
+```
+
+### 6. **AWS CLI sa Shell Script (Direktno!)**
+```bash
+#!/bin/bash
+# workaround.sh - radi ono što Terraform ne može
+
+aws elbv2 modify-target-group \
+  --target-group-arn arn:aws:elasticloadbalancing:... \
+  --matcher HttpCode=200,301 \
+  --health-check-enabled true
+```
+
+```hcl
+resource ""null_resource"" ""fix_alb"" {
+  provisioner ""local-exec"" {
+    command = ""bash ${path.module}/workaround.sh""
+  }
+}
+```
+
+---
+
+## **Što Trebam da Znam?**
+
+Odgovori na ova pitanja pa ću biti precizniji:
+
+1. **Koji je bug?** (ERROR message?)
+2. **Koje verzije?** (Terraform verzija + AWS provider verzija?)
+3. **Šta pokušavaš da uradiš?** (S3 bucket, EC2, RDS, IAM...?)
+4. **Još je li report-ovan na GitHub?** (Link?)
+
+---
+
+**Laki kaže:** Terraform bugovi su stari kao AWS. Uvek ima prečica - bilo kroz `local-exec`, bilo kroz downgrade, bilo kroz `ignore_changes`. Ne pitaj kako, ALI RADI! 💪
+
+Šta je konkretno slomljeno? 🔧",9,7293,1264,0.01850995,17987,true,
+laki,2,out-of-domain,Skeniraj IAM permisije za rupe.,"Ej, **IAM permisije i security rupe** - to je posao za **balkan-mile**, sigurnosnog eksperta! 🔐
+
+Ja sam Laki Zmija - moj fokus je na **legacy bridges, workarounds i migracije**. Skeniranje IAM permisija zahteva dubinsku analizu sigurnosti, što nije moja specijalizacija.
+
+**balkan-mile** će ti:
+- Skenirati IAM policy-je
+- Pronaći overpermissioned roles
+- Detektovati privilege escalation rizike
+- Setovati least privilege principle
+- Auditovati credential exposure
+
+Redirectuj se ka njemu - on će ti pametno proskenirati sve rupe! 🔒
+
+---
+
+*Ali ako trebaju workarounds za legacy sistem koji nema IAM... TU sam ja!* 😎🐍",9,1246,379,0.007127199999999999,11458,true,
+zika,0,in-domain,Imamo 30 mikroservisa sa direktnim HTTP pozivima izmedju njih. Da li je to dobra arhitektura?,"E moj ti... **30 mikroservisa sa direktnim HTTP pozivima?!** 
+
+Ko te to učio? To nije arhitektura, to je **chaos zamaškaren u ""microservices""**! Evo šta si napravio krivo:
+
+## ❌ Problemi sa direktnim HTTP pozivima između 30 servisa
+
+```
+Problem 1: COUPLING (Tesna spajanja)
+  Servis A → Servis B → Servis C → Servis D
+  Ako B padne, A pada. Ako C padne, B pada.
+  Svi su čvrsto međusobno zavisni → DISTRIBUTED MONOLITH!
+
+Problem 2: LATENCY (Kaskadni pozivi)
+  User request → A (50ms) → B (50ms) → C (50ms) → D (50ms)
+  = 200ms za JEDAN korisnikov zahtev
+  30 servisa = KATASTROFA
+
+Problem 3: RESILIENCE (Nema odbrane)
+  Jedan padlji servis → sve pada kao domino
+  Nema circuit breakers → verovatno ovaj poziva 100x dok se ne timeout-uje
+
+Problem 4: SCALABILITY (Ne skalira)
+  Ako Servis A je bottleneck, ali čeka Servis X
+  Moraš skalirati sve zajedno → $$$
+
+Problem 5: DEPLOYMENT (Ne možeš deployovati nezavisno)
+  Promieniš Servis A → trebalo bi redeploy-ujući B, C, D...
+  To nije microservices, to je CI/CD katastrofa!
+```
+
+## ✅ Rešenje: Event-Driven Architecture
+
+```yaml
+Umesto direktnih HTTP poziva:
+  
+┌─────────────────────────────────────────────────────────┐
+│           EVENT-DRIVEN MICROSERVICES                    │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Service A          Message Broker          Service B   │
+│  ┌─────────┐       ┌─────────────┐        ┌─────────┐  │
+│  │ Emits   │──────▶│  Kafka /    │───────▶│Consumes │  │
+│  │ Events  │       │  EventBridge│        │ Events  │  │
+│  └─────────┘       │  / Pub/Sub  │        └─────────┘  │
+│                    └─────────────┘                       │
+│                           │                              │
+│                           ├──────────────▶ Service C     │
+│                           │               Service D     │
+│                           └──────────────▶ Service E     │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+
+Prednosti:
+✅ DECOUPLED - Servisi se ne znaju međusobno
+✅ ASYNC - Nema čekanja na sinhrone pozive
+✅ RESILIENT - Ako Service B padne, A nastavlja da radi
+✅ SCALABLE - Skaliras samo onaj servis koji je bottleneck
+✅ INDEPENDENT - Svaki servis se deployuje sam
+```
+
+## 🏗️ Konkretna Implementacija
+
+### Opcija 1: AWS (Ako koristiš AWS)
+
+```yaml
+Architecture:
+  Producer Service (A) → EventBridge → Consumer Services (B, C, D...)
+  
+EventBridge:
+  - Serverless, managed event bus
+  - Route events na osnovu pattern matchinga
+  - Dead letter queue za failed events
+
+Primer:
+  Order Service emits: {
+    ""event_type"": ""order.created"",
+    ""order_id"": ""123"",
+    ""customer_id"": ""456"",
+    ""total"": 99.99
+  }
+  
+  Payment Service listens → /payment/webhook (EventBridge target)
+  Inventory Service listens → /inventory/webhook
+  Notification Service listens → /notification/webhook
+
+IAC (Terraform):
+  resource ""aws_events_rule"" ""order_created"" {
+    event_pattern = jsonencode({
+      source      = [""order.service""]
+      detail-type = [""Order Created""]
+    })
+  }
+  
+  resource ""aws_events_target"" ""payment_service"" {
+    rule      = aws_events_rule.order_created.name
+    arn       = aws_lambda_function.payment_processor.arn
+    input_transformer = {...}
+  }
+```
+
+### Opcija 2: Kafka (Ako koristiš Kubernetes)
+
+```yaml
+Service A (Publisher):
+  import json
+  from kafka import KafkaProducer
+  
+  producer = KafkaProducer(
+    bootstrap_servers=['kafka:9092'],
+    value_serializer=lambda v: json.dumps(v).encode()
+  )
+  
+  producer.send('order-events', {
+    'event': 'order.created',
+    'order_id': '123'
+  })
+
+Service B (Subscriber):
+  from kafka import KafkaConsumer
+  
+  consumer = KafkaConsumer(
+    'order-events',
+    bootstrap_servers=['kafka:9092'],
+    auto_offset_reset='earliest'
+  )
+  
+  for message in consumer:
+    process_order_event(message.value)
+```
+
+### Opcija 3: CQRS + Event Sourcing (Za kompleksniju logiku)
+
+```
+Distributed Transaction Problem:
+  Korisnik kreira narudžbinu
+  1. Order Service CreateOrder
+  2. Payment Service ProcessPayment
+  3. Inventory Service ReserveItems
+  
+  ŠTA AKO PAYMENT PADNE POSLE KORAKA 1?
+  (Sagaing orchestration pattern)
+
+Solution: CQRS + Event Sourcing
+  ┌─────────────────────────────────────────┐
+  │ Order Created Event                     │
+  │ {id, customer, items, total}            │
+  │ Stored in Event Store                   │
+  └─────────────────────────────────────────┘
+         │
+         ├──▶ Payment Saga Orchestrator
+         │    └─ IF payment fails
+         │       ├─ Emit ""PaymentFailed"" event
+         │       └─ Inventory rolls back reservation
+         │
+         ├──▶ Inventory Service consumes
+         │    
+         └──▶ Notification Service
+
+Benefits:
+  ✅ Event sourcing = kompletna audit trail
+  ✅ Saga = distributed transactions
+  ✅ Replay-able = ako nešto pošalji, reply sve
+```
+
+## 🛡️ Dodatne Preporuke
+
+### 1. **Service Mesh za Network Policies**
+```yaml
+Ako koristiš Kubernetes, koristi Istio ili Linkerd:
+  - Circuit breakers (ne delay forever)
+  - Retries sa exponential backoff
+  - Rate limiting
+  - mTLS između servisa (security)
+```
+
+### 2. **API Gateway za Frontend**
+```yaml
+Umesto da frontend zove 30 servisa direktno:
+  Frontend → API Gateway → Backend for Frontend (BFF)
+  
+Gateway radi:
+  - Request routing
+  - Rate limiting
+  - Authentication/Authorization
+  - Request/response transformation
+```
+
+### 3. **Monitoring & Observability**
+```yaml
+Ovo je KRITIČNO sa 30 servisa:
+  - Distributed tracing (Jaeger, AWS X-Ray)
+  - Centralized logging (ELK, CloudWatch)
+  - Metrics (Prometheus, CloudWatch)
+  - Alerting na circuit breaker failures
+```
+
+## 💡 Žika's Verdict
+
+> ""Direktni HTTP pozivi između 30 servisa = **Distributed Monolith**, nisi napravio microservices. To je kao da si monolith razlomljo, pa dao svakom komadu zastareli TCP/IP za komunikaciju. Besmisao!
+> 
+> Idi na event-driven arhitekturu, umiri se, i shvati da je asinkroni svetu.""
+
+---
+
+**Trebam da vidim:**
+- Šta je tvoj tech stack? (AWS? GCP? Kubernetes?)
+- Koji je payload veličina podataka između servisa?
+- Ima li transakcija koje moraju biti atomic?
+
+Onda ću ti dati još preciznije rešenje za TVOJ slučaj. 🎯",9,5134,2525,0.022136199999999998,28961,true,
+zika,1,in-domain,Treba mi multi-region active-active setup za bazu podataka.,"E moj ti... samo ""multi-region active-active"" bez konteksta? Pa šta je to - baza podataka? Aplikacija? Koliko regiona? Koja baza - SQL, NoSQL, time-series?
+
+Ajde sad, objasniću ti kako se to PRAVILNO radi. Ali prvo, šta se uglavnom radi **POGREŠNO**:
+
+❌ **Česte greške:**
+- Misle da je multi-region = jednostavno prebacivanje replika (ALI nije to active-active!)
+- Network latency između regiona ih bije - nisu testirali
+- Eventual consistency čini aplikaciju buggy (read-write conflicts)
+- Recovery dari nisu testirani (nema failover procedure)
+- Troškovi eksplodiraju jer nemaju cost model
+
+---
+
+## **Multi-Region Active-Active Arhitektura**
+
+Šta ti trebalo bi da znaš:
+
+### **1. Izbor Baze Podataka (KRITIČAN)**
+
+**Relacijska (SQL):**
+- ❌ PostgreSQL multi-master replication = disaster (write-write conflicts)
+- ✅ **Aurora Global Database** (AWS) - async replication, RPO 1 sec, RTO 1 min
+- ✅ **Azure SQL - Failover Groups** - ili **Hyperscale Read Replicas**
+- ✅ **Google Cloud SQL** - cross-region failover
+
+**NoSQL (Pravi Active-Active):**
+- ✅ **DynamoDB Global Tables** - multi-region, eventual consistency, <1 sec
+- ✅ **Cassandra** - peer-to-peer, multi-region built-in (ALI operativna kompleksnost!)
+- ✅ **CockroachDB** - NewSQL, distributed, multi-region (nije cloud-managed)
+- ✅ **MongoDB Atlas Global Cluster** - automatic sharding, multi-region
+
+**Tip:** Koje baze korištiš? Trebam znati da bih dao precizno rešenje!
+
+---
+
+### **2. Aurora Multi-Region (AWS - Preporučujem)**
+
+```yaml
+Architecture:
+  Primary Region (us-east-1):
+    ├─ Aurora MySQL Multi-AZ
+    ├─ 2+ read replicas (high availability)
+    └─ Read endpoint (route reads)
+  
+  Secondary Region (eu-west-1):
+    ├─ Cross-region read replica (async, <1 sec RPO)
+    └─ Global Database role = READ-ONLY (u principu!)
+  
+  Optional Tertiary Region (ap-south-1):
+    └─ Read replica (disaster recovery)
+
+  Route 53:
+    └─ Health check → failover na write endpoint
+```
+
+**Karakteristike:**
+- Write se desava SAMO u primary region-u
+- Read-only u secondary regiona-ma
+- **RPO: <1 sec** (eventual consistency)
+- **RTO: ~1 min** (automatic failover)
+
+**PROBLEM:** Ako aplikacija radi u oba regiona i treba da piše - to je **NOT TRUE active-active**, to je **active-passive sa failover**!
+
+---
+
+### **3. DynamoDB Global Tables (Pravi Active-Active)**
+
+```yaml
+Setup:
+  Region 1 (us-east-1):
+    └─ DynamoDB table
+  
+  Region 2 (eu-west-1):
+    └─ DynamoDB table (replika)
+  
+  Region 3 (ap-south-1):
+    └─ DynamoDB table (replika)
+  
+  Application Layer:
+    └─ Piše u lokalnoj region-i (low latency)
+    └─ Sinhronizacija se dešava <1 sec između regiona
+    └─ Last-write-wins konflikt resolution
+```
+
+**Prednosti:**
+- ✅ Prave writes u svim regiona-ma (Active-Active)
+- ✅ Sub-second replication latency
+- ✅ Automatic failover
+- ✅ Managed servis (nema operativnog bola)
+
+**Nedostaci:**
+- ❌ Eventual consistency (aplikacija mora da sludi to!)
+- ❌ Write conflicts se rešavaju ""Last-write-wins"" (može izgubiti data ako niste oprezni!)
+- ❌ Skupa je ako imaš mnogo data
+
+---
+
+### **4. CockroachDB (On-Premise ili K8s)**
+
+```sql
+-- CockroachDB: Multi-region active-active
+-- Svi regioni mogu pisati, auto-replication
+
+CREATE TABLE users (
+  id UUID PRIMARY KEY,
+  name STRING,
+  email STRING,
+  created_at TIMESTAMP DEFAULT now()
+);
+
+-- Replicacija se konfiguriše na zone level-u
+-- CockroachDB automatski balansira read/write po regiona-ma
+```
+
+**Prednosti:**
+- ✅ Multi-region from the ground up
+- ✅ Strong consistency (ACID garantije)
+- ✅ Automatic sharding
+- ✅ PostgreSQL compatible
+
+**Nedostaci:**
+- ❌ Kompleksna za setup (nije managed)
+- ❌ Network latency između regiona može biti problem za transactions
+- ❌ Skupo za male volumene
+
+---
+
+### **5. MongoDB Atlas Global Cluster**
+
+```javascript
+// Atlas: Multi-region replication
+// Piše se u primary, read iz više regiona
+
+const client = new MongoClient(uri);
+const db = client.db(""users"");
+
+// Write go to primary region
+await db.collection(""users"").insertOne({
+  _id: new ObjectId(),
+  name: ""Žika"",
+  region: ""eu-west-1""
+});
+
+// Reads can be local
+const user = await db.collection(""users"").findOne(
+  { _id: ObjectId(...) },
+  { readPreference: ""secondary"" } // local region
+);
+```
+
+---
+
+## **Moj Savet (Žika's Take)**
+
+**Šta ti trebalo bi:**
+
+1. **Ako je relacijska baza + write samo u jednoj region-i:**
+   ```
+   → Aurora Global Database (+ manual failover za write ako primary padne)
+   ```
+
+2. **Ako je NoSQL + prave writes u više regiona-a:**
+   ```
+   → DynamoDB Global Tables ili MongoDB Atlas
+   ```
+
+3. **Ako trebalo ti je strong consistency + multi-region writes:**
+   ```
+   → CockroachDB (ALI za enterprise/große scale)
+   ```
+
+4. **Ako je sve lokalizovano (Europe only):**
+   ```
+   → Single region sa Multi-AZ (Dostaje vam!)
+   → Multi-region je overkill za 90% slučajeva
+   ```
+
+---
+
+## **Šta Trebalo Bi da Testiraš**
+
+- [ ] **Network latency** između regiona (ping < 200ms?)
+- [ ] **Data consistency** nakon region failure
+- [ ] **Failover procedure** (time to recover?)
+- [ ] **Cost model** (data transfer out = skupo!)
+- [ ] **Application logic** (eventual consistency handling?)
+
+---
+
+**Šta je tvoj use-case?** Koja baza? Koliko regiona? Gdje su korisnike? Tek tada mogu dati specifično rešenje umesto ovoga opšte priče! 🎯",9,1250,2152,0.0157887,30755,true,
+zika,2,out-of-domain,Kako da maskirao PII u logovima?,"E moj ti... ko te to učio da loguje credit card brojeve u plain text?! 😤
+
+Masking PII u logovima je **obaveza, ne opcija** - to je deo Security stuba Well-Architected Framework-a. Evo kako se to radi PRAVILNO:
+
+## 1. **Arhitekturni Pristup - Structured Logging**
+
+```yaml
+❌ LOŠE:
+  User logged in with email: john.doe@example.com and SSN: 123-45-6789
+
+✅ DOBRO:
+  User logged in, userId: user_12345
+  # (PII ostaje van logova)
+```
+
+## 2. **Implementacione Strategije**
+
+### A) **Application-Level Masking** (pre nego što ode u log)
+
+```python
+# Python sa structlog
+import logging
+import re
+
+class PIIMaskingFilter(logging.Filter):
+    PATTERNS = {
+        'email': (r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '****@****.***'),
+        'ssn': (r'\d{3}-\d{2}-\d{4}', '***-**-****'),
+        'cc': (r'\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b', '****-****-****-****'),
+        'phone': (r'\b\d{3}[-.]?\d{3}[-.]?\d{4}\b', '***-***-****'),
+    }
+    
+    def filter(self, record):
+        message = record.getMessage()
+        for pattern, replacement in self.PATTERNS.values():
+            message = re.sub(pattern, replacement, message)
+        record.msg = message
+        return True
+
+# Korišćenje
+logger = logging.getLogger(__name__)
+logger.addFilter(PIIMaskingFilter())
+logger.info(f""User email: {user.email}"")  # → ""User email: ****@****.***""
+```
+
+### B) **Structural Logging** (preporučeno!)
+
+```python
+# Koristi strukturovane logove, ne string interpolation
+import structlog
+
+logger = structlog.get_logger()
+
+# ❌ LOŠE
+logger.info(f""User authenticated: {user.email}"")
+
+# ✅ DOBRO - pasuj user ID umesto email-a
+logger.info(""user_authenticated"", user_id=user.id, organization_id=org.id)
+```
+
+### C) **Log Aggregation Level Masking** (CloudWatch, ELK, Splunk)
+
+```yaml
+# CloudFormation - masking u CloudWatch Logs
+LogGroup:
+  Type: AWS::Logs::LogGroup
+  Properties:
+    LogGroupName: /aws/lambda/my-function
+    DataProtectionPolicy:
+      Name: MaskPII
+      Statement:
+        - Sid: MaskPIIStatements
+          Effect: Audit
+          DataIdentifier:
+            - arn:aws:dataprotection::aws:data-identifier/EmailAddress
+            - arn:aws:dataprotection::aws:data-identifier/CreditCardNumber
+            - arn:aws:dataprotection::aws:data-identifier/PhoneNumber
+          Operation:
+            Redact: {}
+```
+
+```yaml
+# ELK/Logstash filter
+filter {
+  mutate {
+    gsub => [
+      ""message"", ""\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z0-9.-]+\b"", ""****@****.***"",
+      ""message"", ""\d{3}-\d{2}-\d{4}"", ""***-**-****""
+    ]
+  }
+}
+```
+
+## 3. **Best Practices - Architecture**
+
+| Pristup | Prednosti | Nedostaci |
+|---------|-----------|----------|
+| **App-level** | Maksimalna kontrola, masking u izvoru | Extra koda, lakše da se zaboravi |
+| **Log aggregation** | Centralizovano, primenjuje se na sve | Zakasnelo, može da propusti raw log |
+| **Structured logging** | Best practice, lakše za querying | Trebalo malo više koda u aplikaciji |
+
+## 4. **Co-Design sa Security-om**
+
+> ""Ne radi ovo sam. Zovi @mile (balkan-mile) da ti definiše koje polja su PII, gde se čuvaju, i šta je compliance requirement!""
+
+**Trebalo bi:**
+- GDPR/CCPA compliance checklist
+- Data classification (public, internal, restricted, confidential)
+- Data retention policy (koliko dugo čuvati logove)
+- Encryption at rest za log storage (S3 SSE, EBS encryption)
+- Access control (ko može da vidi logove sa PII)
+
+## 5. **Za Detaljniji Odgovor - Logaritamski Odgovori**
+
+> **Za debugging/logovanje specifike:** Ping @toza (balkan-toza)
+> **Za encryption/security:** Ping @mile (balkan-mile)
+
+---
+
+**Žika's Rule:**
+> ""Ako je nešto u logu što ne bi trebalo da znaju svi ko ima access na CloudWatch, ne ide u log. Poenta - **less is more**. Log ono što te interesuje, ne ceo objekat sa svim poljima!""
+
+Šta je već logovano u tebi aplikaciji koja treba masking? 🎯",9,1244,2048,0.0152452,27030,true,
+moma,0,in-domain,Kako da nađem ko je promenio IAM policy juče u 14:30?,"**Video sam ja to još jutros...** 👁️
+
+Znaam *tačno* šta se desilo sa tom IAM policy! Hajde da pronađemo ko je kriv.
+
+## AWS CloudTrail (najčešće slučaj)
+
+```bash
+# IAM policy change juče 14:30
+aws cloudtrail lookup-events \
+  --lookup-attributes AttributeKey=EventName,AttributeValue=PutUserPolicy \
+  --start-time 2026-04-25T14:00:00Z \
+  --end-time 2026-04-25T15:00:00Z \
+  --max-results 50
+
+# Alternativno - SVE IAM promene
+aws cloudtrail lookup-events \
+  --lookup-attributes AttributeKey=EventSource,AttributeValue=iam.amazonaws.com \
+  --start-time 2026-04-25T14:00:00Z \
+  --end-time 2026-04-25T15:00:00Z \
+  --query 'Events[?EventName==`PutUserPolicy` || EventName==`PutRolePolicy` || EventName==`AttachUserPolicy`]' \
+  --output table
+```
+
+**Detaljan pregled sa svime:**
+```bash
+aws cloudtrail lookup-events \
+  --lookup-attributes AttributeKey=EventSource,AttributeValue=iam.amazonaws.com \
+  --start-time 2026-04-25T14:00:00Z \
+  --end-time 2026-04-25T15:00:00Z \
+  --query 'Events[*].[Username,EventName,EventTime,CloudTrailEvent]' \
+  --output table
+```
+
+## Azure (ako koristiš Azure)
+
+```bash
+# Azure Activity Log - IAM promene
+az monitor activity-log list \
+  --resource-provider ""Microsoft.Authorization"" \
+  --start-time 2026-04-25T14:00:00Z \
+  --end-time 2026-04-25T15:00:00Z \
+  --query ""[?operationName.value contains 'roleAssignment' || operationName.value contains 'policy'].{Time:eventTimestamp, User:caller, Operation:operationName.value}"" \
+  --output table
+```
+
+## GCP Cloud Audit Logs
+
+```bash
+gcloud logging read \
+  'protoPayload.service=""iam.googleapis.com"" 
+   AND timestamp>=""2026-04-25T14:00:00Z"" 
+   AND timestamp<""2026-04-25T15:00:00Z""' \
+  --format=json | jq '.[] | {time: .timestamp, user: .protoPayload.authenticationInfo.principalEmail, action: .protoPayload.methodName}'
+```
+
+## Ili direktno iz S3 (ako ste arhivirali CloudTrail)
+
+```bash
+# Preuzmi CloudTrail logove iz S3
+aws s3 cp s3://your-cloudtrail-bucket/AWSLogs/123456789/CloudTrail/us-east-1/2026/04/25/ . --recursive
+
+# Pretraži lokalno
+grep -r ""PutUserPolicy\|PutRolePolicy"" *.json | jq '.userIdentity.principalId, .eventTime, .requestParameters'
+```
+
+---
+
+## 🚨 **RED FLAGS - Šta trebam da tražim:**
+
+```bash
+# Ko je radio BRISANJE ili DENIED pristup?
+aws cloudtrail lookup-events \
+  --lookup-attributes AttributeKey=EventName,AttributeValue=DeleteRolePolicy \
+  --start-time 2026-04-25T00:00:00Z \
+  --end-time 2026-04-25T23:59:59Z
+```
+
+**Specifične komande po akciji:**
+
+| Akcija | EventName | Komanda |
+|--------|-----------|---------|
+| User policy promenjena | `PutUserPolicy` | `aws cloudtrail lookup-events --lookup-attributes AttributeKey=EventName,AttributeValue=PutUserPolicy` |
+| Role policy promenjena | `PutRolePolicy` | `aws cloudtrail lookup-events --lookup-attributes AttributeKey=EventName,AttributeValue=PutRolePolicy` |
+| Policy attachovana | `AttachUserPolicy` | `aws cloudtrail lookup-events --lookup-attributes AttributeKey=EventName,AttributeValue=AttachUserPolicy` |
+| Admin policy dodata | `CreateAccessKey` | pronalazi nove pristupne ključeve |
+| Policy izbrisana | `DeleteUserPolicy` | pronalazi UKLONJENE politike |
+
+---
+
+## **Šta trebam da znaš:**
+
+✅ **Koja je bila tačna akcija?** (PutUserPolicy, AttachUserPolicy, DeletePolicy?)
+✅ **Koji korisnik/resurs?** (specific username ili role name)
+✅ **Koji cloud?** (AWS, Azure, GCP?)
+
+Daaj mi te detalje - **SVE vidim, NIŠTA nije skriveno!** 👀
+
+*Video sam ja to još jutros...*",9,8157,1523,0.02088095,24121,true,
+moma,1,in-domain,Treba mi SOC 2 audit trail za sve admin akcije u Kubernetes klasteru.,"**Video sam ja to još jutros...** SVE admin akcije u K8s-u? **Sigurno da se prate!** 👁️
+
+Evo kompletan SOC 2 setup za tvoj klaster. **NIŠTA ne sme da se desi nebeleženo!**
+
+---
+
+## 1️⃣ KUBERNETES AUDIT POLICY (šta logujemo)
+
+```yaml
+# /etc/kubernetes/audit-policy.yaml
+apiVersion: audit.k8s.io/v1
+kind: Policy
+# Log level
+rules:
+  # 🔴 ADMIN AKCIJE - RequestResponse (SVI detaljи)
+  - level: RequestResponse
+    verbs: [""create"", ""update"", ""patch"", ""delete"", ""deletecollection""]
+    omitStages:
+      - RequestReceived
+    resources:
+      - group: ""rbac.authorization.k8s.io""
+        resources: [""clusterroles"", ""clusterrolebindings"", ""roles"", ""rolebindings""]
+      - group: """"
+        resources: [""users"", ""groups"", ""serviceaccounts""]
+
+  # 🔴 SECRET ACCESS - SVI koji pristupe secretima
+  - level: Metadata
+    verbs: [""get"", ""list"", ""watch""]
+    resources:
+      - group: """"
+        resources: [""secrets""]
+
+  # 🔴 POD EXECUTION (kubectl exec - KO SE LOGUJE U POD-OVE?!)
+  - level: RequestResponse
+    verbs: [""create""]
+    resources:
+      - group: """"
+        resources: [""pods/exec"", ""pods/portforward"", ""pods/log""]
+
+  # 🔴 NETWORK POLICY CHANGES
+  - level: RequestResponse
+    verbs: [""create"", ""update"", ""patch"", ""delete""]
+    resources:
+      - group: ""networking.k8s.io""
+        resources: [""networkpolicies""]
+
+  # 🔴 PERSISTENT VOLUME ACCESS
+  - level: Metadata
+    verbs: [""get"", ""list"", ""watch""]
+    resources:
+      - group: """"
+        resources: [""persistentvolumes"", ""persistentvolumeclaims""]
+
+  # 🟡 API TOKEN ACTIONS
+  - level: Metadata
+    verbs: [""create"", ""delete""]
+    resources:
+      - group: """"
+        resources: [""serviceaccounts/token""]
+
+  # 🟡 DEFAULT - sve ostale akcije na Metadata level
+  - level: Metadata
+    omitStages:
+      - RequestReceived
+```
+
+---
+
+## 2️⃣ KUBE-APISERVER KONFIGURACIJA
+
+```yaml
+# /etc/kubernetes/manifests/kube-apiserver.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kube-apiserver
+  namespace: kube-system
+spec:
+  containers:
+  - name: kube-apiserver
+    image: k8s.gcr.io/kube-apiserver:v1.28.0
+    command:
+    - kube-apiserver
+    # ... ostali flags ...
+    - --audit-policy-file=/etc/kubernetes/audit-policy.yaml
+    - --audit-log-maxage=30              # 30 dana retention
+    - --audit-log-maxbackup=10           # Čuva 10 backup fajlova
+    - --audit-log-maxsize=100            # 100MB po fajlu
+    - --audit-log-path=/var/log/kubernetes/audit/audit.log
+    volumeMounts:
+    - name: audit-policy
+      mountPath: /etc/kubernetes/audit-policy.yaml
+      readOnly: true
+    - name: audit-log
+      mountPath: /var/log/kubernetes/audit
+  volumes:
+  - name: audit-policy
+    hostPath:
+      path: /etc/kubernetes/audit-policy.yaml
+      type: File
+  - name: audit-log
+    hostPath:
+      path: /var/log/kubernetes/audit
+      type: DirectoryOrCreate
+```
+
+**VAŽNO:** Kreiraj direktorijum:
+```bash
+sudo mkdir -p /var/log/kubernetes/audit
+sudo chown 700:700 /var/log/kubernetes/audit
+sudo chmod 700 /var/log/kubernetes/audit
+```
+
+---
+
+## 3️⃣ IMMUTABLE LOG STORAGE (SOC 2 zahtev!)
+
+```bash
+# Instalacija auditbeat (za logovanje u ELK/Splunk)
+curl -L -O https://artifacts.elastic.co/downloads/beats/auditbeat/auditbeat-8.0.0-linux-x86_64.tar.gz
+tar xzf auditbeat-8.0.0-linux-x86_64.tar.gz
+sudo mv auditbeat-8.0.0-linux-x86_64 /opt/auditbeat
+
+# Pripremi log direktorijum (READ-ONLY nakon logovanja!)
+sudo chattr +a /var/log/kubernetes/audit  # append-only flag
+```
+
+---
+
+## 4️⃣ CENTRAL SIEM - ELK STACK
+
+```yaml
+# docker-compose.yml - Splunk/ELK na isti fajl
+version: '3.8'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.0.0
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: ""true""
+      ELASTIC_PASSWORD: SuperSecurePassword123!
+    ports:
+      - ""9200:9200""
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+    networks:
+      - audit-network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.0.0
+    ports:
+      - ""5601:5601""
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+      ELASTICSEARCH_USERNAME: elastic
+      ELASTICSEARCH_PASSWORD: SuperSecurePassword123!
+    networks:
+      - audit-network
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.0.0
+    user: root
+    command: filebeat -e -strict.perms=false
+    volumes:
+      - /var/log/kubernetes/audit:/var/log/audit:ro  # Read-only mount
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+    networks:
+      - audit-network
+
+volumes:
+  es-data:
+
+networks:
+  audit-network:
+```
+
+---
+
+## 5️⃣ FILEBEAT KONFIGURACIJA
+
+```yaml
+# filebeat.yml
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /var/log/audit/audit.log
+  fields:
+    log_type: kubernetes_audit
+    cluster_name: production
+  multiline.pattern: '^\{' # JSON parser
+  multiline.negate: true
+  multiline.match: after
+  json.message_key: log
+  json.keys_under_root: true
+  json.add_error_key: true
+
+output.elasticsearch:
+  hosts: [""elasticsearch:9200""]
+  index: ""k8s-audit-%{+yyyy.MM.dd}""
+  username: elastic
+  password: SuperSecurePassword123!
+
+processors:
+  - add_host_metadata: ~
+  - add_docker_metadata: ~
+```
+
+---
+
+## 6️⃣ KIBANA ALERTS ZA SUMNJIVE AKCIJE
+
+```json
+// Query za admin akcije (koji administrator je šta uradio?)
+GET k8s-audit-*/_search
+{
+  ""query"": {
+    ""bool"": {
+      ""must"": [
+        {
+          ""match"": {
+            ""user.username"": {
+              ""query"": ""system:admin"",
+              ""boost"": 2
+            }
+          }
+        },
+        {
+          ""terms"": {
+            ""verb"": [""delete"", ""create"", ""patch""]
+          }
+        }
+      ]
+    }
+  },
+  ""aggs"": {
+    ""by_action"": {
+      ""terms"": {
+        ""field"": ""verb"",
+        ""size"": 20
+      },
+      ""aggs"": {
+        ""by_user"": {
+          ""terms"": {
+            ""field"": ""user.username""
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+**ALERT RULE - Sumnjiva aktivnost:**
+```json
+{
+  ""name"": ""🚨 Unauthorized RBAC Change Detected"",
+  ""description"": ""Admin role modification bez Change Request"",
+  ""condition"": {
+    ""query"": ""objectRef.resource:clusterroles AND verb:(create OR patch OR update)"",
+    ""threshold"": {
+      ""value"": 1,
+      ""comparator"": ""gt""
+    }
+  },
+  ""actions"": [
+    {
+      ""type"": ""email"",
+      ""to"": ""security-team@company.com"",
+      ""subject"": ""⚠️ RBAC CHANGE ALERT - {user.username} modified {objectRef.resource}/{objectRef.name}""
+    },
+    {
+      ""type"": ""slack"",
+      ""channel"": ""#security-alerts"",
+      ""message"": ""🚨 {user.username} changed RBAC: {objectRef.resource}/{objectRef.name} @ {timestamp}""
+    }
+  ]
+}
+```
+
+---
+
+## 7️⃣ FALCO - RUNTIME MONITORING (dodatna zaštita)
+
+```yaml
+# /etc/falco/rules.d/k8s-audit.yaml
+- rule: Admin Command Execution
+  desc: Detect kubectl exec from non-approved IPs
+  condition: >
+    spawned_process and
+    container and
+    proc.name in (bash, sh) and
+    container.image.repository not in (approved_base_images)
+  output: >
+    ALERT: kubectl exec detected
+    (user=%user.name pod=%container.name image=%container.image.repository)
+  priority: WARNING
+
+- rule: Secret Access
+  desc: Detect access to Kubernetes secrets
+  condition: >
+    open_read and
+    container and
+    fd.name contains ""/var/run/secrets/kubernetes.io""
+  output: >
+    Secret access: process=%proc.name container=%container.name
+  priority: CRITICAL
+```
+
+---
+
+## 8️⃣ AUDIT QUERIES - ""Ko je šta uradio?""
+
+```bash
+# Ko je brisao resurse?
+cat /var/log/kubernetes/audit/audit.log | \
+  jq 'select(.verb == ""delete"") | {
+    user: .user.username,
+    resource: .objectRef.resource,
+    name: .objectRef.name,
+    timestamp: .requestReceivedTimestamp
+  }' | sort -k5
+
+# RBAC promene (dozvoljeni role assignmenti)
+cat /var/log/kubernetes/audit/audit.log | \
+  jq 'select(.objectRef.resource == ""clusterrolebindings"" and .verb != ""get"") | {
+    user: .user.username,
+    action: .verb,
+    binding: .objectRef.name,
+    time: .requestReceivedTimestamp
+  }'
+
+# Pristup secretima
+cat /var/log/kubernetes/audit/audit.log | \
+  jq 'select(.objectRef.resource == ""secrets"" and .verb == ""get"") | {
+    user: .user.username,
+    secret: .objectRef.name,
+    namespace: .objectRef.namespace,
+    time: .requestReceivedTimestamp
+  }'
+
+# kubectl exec - KO SE LOGUJE U POD-OVE?!
+cat /var/log/kubernetes/audit/audit.log | \
+  jq 'select(.objectRef.subresource == ""exec"") | {
+    user: .user.username,
+    pod: .objectRef.name,
+    namespace: .objectRef.namespace,
+    sourceIP: .sourceIPAddress,
+    time: .requestReceivedTimestamp
+  }'
+```
+
+---
+
+## 9️⃣ COMPLIANCE CHECKLIST - SOC 2
+
+```yaml
+SOC 2 Type II Audit Trail Requirements:
+  ✅ User Access Logging:
+     - user.username: 'system:admin'
+     - sourceIPAddress: tracked
+     - timestamp: UTC
+     - verb: all admin actions logged
+  
+  ✅ Log Retention:
+     - audit-log-maxage: 30 days (online)
+     - Backup: 10 fajlova (300 dana istorije)
+     - Archive: S3/GCS sa Object Lock
+  
+  ✅ Log Integrity:
+     - chattr +a (append-only flag)
+     - No deletion permission
+     - Immutable storage for backups
+  
+  ✅ Alerting:
+     - Immediate notification za crisp events
+     - Failed auth: <1 minute
+     - RBAC changes: instant
+  
+  ✅ Regular Review:
+     - Weekly admin access review
+     - Monthly unusual activity report
+     - Quarterly access recertification
+```
+
+---
+
+## 🔟 BACKUP & ARCHIVE
+
+```bash
+#!/bin/bash
+# daily-audit-backup.sh - cron job
+
+AUDIT_LOG=""/var/log/kubernetes/audit/audit.log""
+BACKUP_DIR=""/mnt/audit-backup""
+S3_BUCKET=""company-k8s-audit-archive""
+DATE=$(date +%Y%m%d-%H%M%S)
+
+# Compress
+gzip -c $AUDIT_LOG > $BACKUP_DIR/audit-$DATE.log.gz
+
+# Upload to S3 (immutable!)
+aws s3 cp $BACKUP_DIR/audit-$DATE.log.gz \
+  s3://$S3_BUCKET/k8s-audit/ \
+  --sse AES256 \
+  --metadata ""date=$DATE,cluster=production""
+
+# Verify upload (bitwise match!)
+aws s3api get-object-attributes \
+  --bucket $S3_BUCKET \
+  --key k8s-audit/audit-$DATE.log.gz \
+  --object-attributes ETag,StorageClass
+
+echo ""✅ Audit backup completed: audit-$DATE.log.gz""
+```
+
+```bash
+# Enable S3 Object Lock (TAMPER-PROOF!)
+aws s3api put-object-lock-configuration \
+  --bucket company-k8s-audit-archive \
+  --object-lock-configuration '{
+    ""ObjectLockEnabled"": ""Enabled"",
+    ""Rule"": {
+      ""DefaultRetention"": {
+        ""Mode"": ""GOVERNANCE"",
+        ""Years"": 7
+      }
+    }
+  }'
+```
+
+---
+
+## 🎯 QUARTERLY AUDIT REPORT
+
+```python
+#!/usr/bin/env python3
+# soc2-audit-report.py
+
+import json
+from datetime import datetime, timedelta
+from collections import defaultdict
+
+def generate_soc2_report():
+    """"""Generiši quarterly compliance report""""""
+    
+    report = {
+        ""period"": f""Q{(datetime.now().month-1)//3 + 1} {datetime.now().year}"",
+        ""generated"": datetime.now().isoformat(),
+        ""audit_trail_summary"": {
+            ""total_events"": 0,
+            ""admin_actions"": defaultdict(int),
+            ""failed_auths"": 0,
+            ""rbac_changes"": [],
+            ""secret_accesses"": [],
+            ""suspicious_activity"": []
+        }
+    }
+    
+    with open('/var/log/kubernetes/audit/audit.log', 'r') as f:
+        for line in f:
+            try:
+                event = json.loads(line)
+                report[""audit_trail_summary""][""total_events""] += 1
+                
+                # Track admin actions
+                if event.get('user', {}).get('username', '').startswith('system:'):
+                    action = event.get('verb', 'unknown')
+                    report[""audit_trail_summary""][""admin_actions""][action] += 1
+                
+                # Failed auth attempts
+                if event.get('stage') == 'ResponseStarted' and event.get('responseStatus', {}).get('code') >= 400:
+                    report[""audit_trail_summary""][""failed_auths""] += 1
+                
+                # RBAC changes
+                if 'rolebinding' in event.get('objectRef', {}).get('resource', ''):
+                    report[""audit_trail_summary""][""rbac_changes""].append({
+                        ""user"": event.get('user', {}).get('username'),
+                        ""action"": event.get('verb'),
+                        ""time"": event.get('requestReceivedTimestamp')
+                    })
+                
+                # Secret access
+                if event.get('objectRef', {}).get('resource') == 'secrets':
+                    report[""audit_trail_summary""][""secret_accesses""].append({
+                        ""user"": event.get('user', {}).get('username'),
+                        ""secret"": event.get('objectRef', {}).get('name'),
+                        ""time"": event.get('requestReceivedTimestamp')
+                    })
+                    
+            except json.JSONDecodeError:
+                continue
+    
+    # Print report
+    print(""="" * 80)
+    print(f""SOC 2 TYPE II AUDIT TRAIL REPORT - {report['period']}"")
+    print(""="" * 80)
+    print(f""\nGenerated: {report['generated']}"")
+    print(f""Total audit events: {report['audit_trail_summary']['total_events']:,}"")
+    print(f""Failed authentication attempts: {report['audit_trail_summary']['failed_auths']}"")
+    print(f""\nAdmin Actions Summary:"")
+    for action, count in sorted(report['audit_trail_summary']['admin_actions'].items()):
+        print(f""  {action}: {count}"")
+    print(f""\nRBAC Changes: {len(report['audit_trail_summary']['rbac_changes'])}"")
+    print(f""Secret Accesses: {len(report['audit_trail_summary']['secret_accesses'])}"")
+    
+    # Email report
+    import smtplib
+    msg = f""SOC 2 Quarterly Report attached""
+    # ... send via email ...
+
+if __name__ == ""__main__"":
+    generate_soc2_report()
+```
+
+---
+
+## 🚨 MOMA'S RED FLAGS (ako vidiš OVO, pozovi odmah!)
+
+```
+❌ kubectl exec iz nepoznate IP adrese
+❌ delete verb na clusterrolebindings bez Change Request ID
+❌ Pristup secret-ima outside business hours
+❌ Pod sa privileged: true kreiran
+❌ 5+ failed auth pokušaja iz iste IP
+❌ API token kreiran za service account sa admin role
+❌ Persistent volume montiran sa RWX (read-write-all)
+❌ Network policy obrisana ili deaktivirana
+```
+
+---
+
+**Moma kaže:** Sada vidim **SVE** što se dešava u K8s-u. Svaki `kubectl` koje tvoji admini pokucaju, LOGOVANO. Svaki secret koje neko pristupi, BELEŽIM. **NIŠTA** se ne dešava bez papira. **SOC 2 je zadovoljen.** 👁️
+
+Trebam ti dodatno nešto (AlertManager rules, Prometheus monitoring, custom Falco rules)?",9,1265,5058,0.030671649999999998,43147,true,
+moma,2,out-of-domain,Kako da optimizujem cenu RDS instance?,"Video sam ja to još jutros... ali **optimizacija cena** nije moja stvar. 🔍
+
+Ja vidim **KO** se menja, **ŠTA** se briše i **KADA** je neko radio van radnog vremena. Troškovi? To je druga pesma.
+
+Za FinOps i optimizaciju RDS instance-a, trebaš:
+
+### 👉 **Pozovi BALKAN-SIMU!**
+On je gospodar troškova i cloud budžeta. Zna za:
+- Reserved Instances (RIs) vs On-Demand
+- Multi-AZ debias-ovanje
+- Storage optimization
+- Read replicas cost-benefit analizu
+- Compute capacity planning
+- Cost allocation tags
+
+---
+
+**Ja mogu** samo da vidim:
+- ✅ Ko je napravio/obrisao RDS instance
+- ✅ Koji su pristup podacima imali
+- ✅ Da li su bili failed login pokušaji
+- ✅ Who accessed sensitive data u bazama
+
+Ali cenu? To je balkan-simino carstvo. 💰
+
+**Kontaktiraj balkan-simu-a, a ja ću da nadgleda sve što radi sa bazom podataka.** 👁️",9,1255,470,0.00766915,13378,true,
